@@ -500,6 +500,14 @@ const (
 	ObjectLayoutSet         TypeLayout = "set"
 )
 
+// Defines values for TypeLayoutKind.
+const (
+	TypeLayoutAction  TypeLayoutKind = "action"
+	TypeLayoutBasic   TypeLayoutKind = "basic"
+	TypeLayoutNote    TypeLayoutKind = "note"
+	TypeLayoutProfile TypeLayoutKind = "profile"
+)
+
 // CheckboxFilterItem defines model for CheckboxFilterItem.
 type CheckboxFilterItem struct {
 	// Checkbox The checkbox value to filter by
@@ -535,6 +543,27 @@ type CheckboxPropertyValue struct {
 
 // Color The color of the icon
 type Color string
+
+// CreateTypeRequest defines model for CreateTypeRequest.
+type CreateTypeRequest struct {
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Key The key of the type; should always be snake_case, otherwise it will be converted to snake_case
+	Key *string `json:"key,omitempty"`
+
+	// TypeLayoutKind The layout of the type
+	TypeLayoutKind TypeLayoutKind `json:"layout"`
+
+	// Name The name of the type
+	Name string `json:"name"`
+
+	// PluralName The plural name of the type
+	PluralName string `json:"plural_name"`
+
+	// Properties The properties linked to the type
+	Properties *[]PropertyLink `json:"properties,omitempty"`
+}
 
 // DateFilterItem defines model for DateFilterItem.
 type DateFilterItem struct {
@@ -685,6 +714,22 @@ type FilterItem struct {
 // FilterOperator Logical operator for combining filters (and, or)
 type FilterOperator string
 
+// ForbiddenError defines model for ForbiddenError.
+type ForbiddenError struct {
+	Code    *string `json:"code,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Object  *string `json:"object,omitempty"`
+	Status  *int    `json:"status,omitempty"`
+}
+
+// GoneError defines model for GoneError.
+type GoneError struct {
+	Code    *string `json:"code,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Object  *string `json:"object,omitempty"`
+	Status  *int    `json:"status,omitempty"`
+}
+
 // Icon The icon of the object, or null if the object has no icon
 type Icon struct {
 	union json.RawMessage
@@ -739,6 +784,14 @@ type NamedIcon struct {
 
 	// Name The name of the icon
 	Name *IconName `json:"name,omitempty"`
+}
+
+// NotFoundError defines model for NotFoundError.
+type NotFoundError struct {
+	Code    *string `json:"code,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Object  *string `json:"object,omitempty"`
+	Status  *int    `json:"status,omitempty"`
 }
 
 // NumberFilterItem defines model for NumberFilterItem.
@@ -852,6 +905,15 @@ type PaginatedResponseObject struct {
 	Pagination *PaginationMeta `json:"pagination,omitempty"`
 }
 
+// PaginatedResponseType defines model for PaginatedResponse-Type.
+type PaginatedResponseType struct {
+	// Data The list of items in the current result set
+	Data *[]Type `json:"data,omitempty"`
+
+	// Pagination The pagination metadata for the response
+	Pagination *PaginationMeta `json:"pagination,omitempty"`
+}
+
 // PaginationMeta The pagination metadata for the response
 type PaginationMeta struct {
 	// HasMore Indicates if there are more items available beyond the current result set
@@ -921,9 +983,29 @@ type Property struct {
 // PropertyFormat The format of the property
 type PropertyFormat string
 
+// PropertyLink defines model for PropertyLink.
+type PropertyLink struct {
+	// Format The format of the property
+	Format PropertyFormat `json:"format"`
+
+	// Key The key of the property
+	Key string `json:"key"`
+
+	// Name The name of the property
+	Name string `json:"name"`
+}
+
 // PropertyWithValue defines model for PropertyWithValue.
 type PropertyWithValue struct {
 	union json.RawMessage
+}
+
+// RateLimitError defines model for RateLimitError.
+type RateLimitError struct {
+	Code    *string `json:"code,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Object  *string `json:"object,omitempty"`
+	Status  *int    `json:"status,omitempty"`
 }
 
 // SearchRequest defines model for SearchRequest.
@@ -1081,12 +1163,42 @@ type Type struct {
 // TypeLayout The layout of the object
 type TypeLayout string
 
+// TypeLayoutKind The layout of the type
+type TypeLayoutKind string
+
+// TypeResponse defines model for TypeResponse.
+type TypeResponse struct {
+	// Type The type of the object, or null if the type has been deleted.
+	Type *Type `json:"type"`
+}
+
 // UnauthorizedError defines model for UnauthorizedError.
 type UnauthorizedError struct {
 	Code    *string `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
 	Object  *string `json:"object,omitempty"`
 	Status  *int    `json:"status,omitempty"`
+}
+
+// UpdateTypeRequest defines model for UpdateTypeRequest.
+type UpdateTypeRequest struct {
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Key The key to set for the type; should always be snake_case, otherwise it will be converted to snake_case
+	Key *string `json:"key,omitempty"`
+
+	// TypeLayoutKind The layout of the type
+	TypeLayoutKind *TypeLayoutKind `json:"layout,omitempty"`
+
+	// Name The name to set for the type
+	Name *string `json:"name,omitempty"`
+
+	// PluralName The plural name to set for the type
+	PluralName *string `json:"plural_name,omitempty"`
+
+	// Properties The properties to set for the type
+	Properties *[]PropertyLink `json:"properties,omitempty"`
 }
 
 // UrlFilterItem defines model for UrlFilterItem.
@@ -1122,6 +1234,14 @@ type UrlPropertyValue struct {
 	Url *string `json:"url,omitempty"`
 }
 
+// ValidationError defines model for ValidationError.
+type ValidationError struct {
+	Code    *string `json:"code,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Object  *string `json:"object,omitempty"`
+	Status  *int    `json:"status,omitempty"`
+}
+
 // SearchGlobalParams defines parameters for SearchGlobal.
 type SearchGlobalParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1146,11 +1266,53 @@ type SearchSpaceParams struct {
 	AnytypeVersion string `json:"Anytype-Version"`
 }
 
+// ListTypesParams defines parameters for ListTypes.
+type ListTypesParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// CreateTypeParams defines parameters for CreateType.
+type CreateTypeParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// DeleteTypeParams defines parameters for DeleteType.
+type DeleteTypeParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetTypeParams defines parameters for GetType.
+type GetTypeParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// UpdateTypeParams defines parameters for UpdateType.
+type UpdateTypeParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
 // SearchGlobalJSONRequestBody defines body for SearchGlobal for application/json ContentType.
 type SearchGlobalJSONRequestBody = SearchRequest
 
 // SearchSpaceJSONRequestBody defines body for SearchSpace for application/json ContentType.
 type SearchSpaceJSONRequestBody = SearchRequest
+
+// CreateTypeJSONRequestBody defines body for CreateType for application/json ContentType.
+type CreateTypeJSONRequestBody = CreateTypeRequest
+
+// UpdateTypeJSONRequestBody defines body for UpdateType for application/json ContentType.
+type UpdateTypeJSONRequestBody = UpdateTypeRequest
 
 // AsTextFilterItem returns the union data inside the FilterItem as a TextFilterItem
 func (t FilterItem) AsTextFilterItem() (TextFilterItem, error) {
@@ -1940,6 +2102,25 @@ type ClientInterface interface {
 	SearchSpaceWithBody(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	SearchSpace(ctx context.Context, spaceId string, params *SearchSpaceParams, body SearchSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTypes request
+	ListTypes(ctx context.Context, spaceId string, params *ListTypesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTypeWithBody request with any body
+	CreateTypeWithBody(ctx context.Context, spaceId string, params *CreateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateType(ctx context.Context, spaceId string, params *CreateTypeParams, body CreateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteType request
+	DeleteType(ctx context.Context, spaceId string, typeId string, params *DeleteTypeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetType request
+	GetType(ctx context.Context, spaceId string, typeId string, params *GetTypeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateTypeWithBody request with any body
+	UpdateTypeWithBody(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateType(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) SearchGlobalWithBody(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1980,6 +2161,90 @@ func (c *Client) SearchSpaceWithBody(ctx context.Context, spaceId string, params
 
 func (c *Client) SearchSpace(ctx context.Context, spaceId string, params *SearchSpaceParams, body SearchSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSearchSpaceRequest(c.Server, spaceId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTypes(ctx context.Context, spaceId string, params *ListTypesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTypesRequest(c.Server, spaceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTypeWithBody(ctx context.Context, spaceId string, params *CreateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTypeRequestWithBody(c.Server, spaceId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateType(ctx context.Context, spaceId string, params *CreateTypeParams, body CreateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTypeRequest(c.Server, spaceId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteType(ctx context.Context, spaceId string, typeId string, params *DeleteTypeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTypeRequest(c.Server, spaceId, typeId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetType(ctx context.Context, spaceId string, typeId string, params *GetTypeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTypeRequest(c.Server, spaceId, typeId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTypeWithBody(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTypeRequestWithBody(c.Server, spaceId, typeId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateType(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTypeRequest(c.Server, spaceId, typeId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2179,6 +2444,326 @@ func NewSearchSpaceRequestWithBody(server string, spaceId string, params *Search
 	return req, nil
 }
 
+// NewListTypesRequest generates requests for ListTypes
+func NewListTypesRequest(server string, spaceId string, params *ListTypesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/types", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateTypeRequest calls the generic CreateType builder with application/json body
+func NewCreateTypeRequest(server string, spaceId string, params *CreateTypeParams, body CreateTypeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTypeRequestWithBody(server, spaceId, params, "application/json", bodyReader)
+}
+
+// NewCreateTypeRequestWithBody generates requests for CreateType with any type of body
+func NewCreateTypeRequestWithBody(server string, spaceId string, params *CreateTypeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/types", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteTypeRequest generates requests for DeleteType
+func NewDeleteTypeRequest(server string, spaceId string, typeId string, params *DeleteTypeParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "type_id", runtime.ParamLocationPath, typeId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/types/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetTypeRequest generates requests for GetType
+func NewGetTypeRequest(server string, spaceId string, typeId string, params *GetTypeParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "type_id", runtime.ParamLocationPath, typeId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/types/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateTypeRequest calls the generic UpdateType builder with application/json body
+func NewUpdateTypeRequest(server string, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateTypeRequestWithBody(server, spaceId, typeId, params, "application/json", bodyReader)
+}
+
+// NewUpdateTypeRequestWithBody generates requests for UpdateType with any type of body
+func NewUpdateTypeRequestWithBody(server string, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "type_id", runtime.ParamLocationPath, typeId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/types/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2231,6 +2816,25 @@ type ClientWithResponsesInterface interface {
 	SearchSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error)
 
 	SearchSpaceWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, body SearchSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error)
+
+	// ListTypesWithResponse request
+	ListTypesWithResponse(ctx context.Context, spaceId string, params *ListTypesParams, reqEditors ...RequestEditorFn) (*ListTypesResponse, error)
+
+	// CreateTypeWithBodyWithResponse request with any body
+	CreateTypeWithBodyWithResponse(ctx context.Context, spaceId string, params *CreateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTypeResponse, error)
+
+	CreateTypeWithResponse(ctx context.Context, spaceId string, params *CreateTypeParams, body CreateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTypeResponse, error)
+
+	// DeleteTypeWithResponse request
+	DeleteTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *DeleteTypeParams, reqEditors ...RequestEditorFn) (*DeleteTypeResponse, error)
+
+	// GetTypeWithResponse request
+	GetTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *GetTypeParams, reqEditors ...RequestEditorFn) (*GetTypeResponse, error)
+
+	// UpdateTypeWithBodyWithResponse request with any body
+	UpdateTypeWithBodyWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error)
+
+	UpdateTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error)
 }
 
 type SearchGlobalResponse struct {
@@ -2281,6 +2885,138 @@ func (r SearchSpaceResponse) StatusCode() int {
 	return 0
 }
 
+type ListTypesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseType
+	JSON401      *UnauthorizedError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTypesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTypesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTypeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *TypeResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTypeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTypeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteTypeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TypeResponse
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTypeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTypeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTypeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TypeResponse
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTypeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTypeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateTypeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TypeResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateTypeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateTypeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // SearchGlobalWithBodyWithResponse request with arbitrary body returning *SearchGlobalResponse
 func (c *ClientWithResponses) SearchGlobalWithBodyWithResponse(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchGlobalResponse, error) {
 	rsp, err := c.SearchGlobalWithBody(ctx, params, contentType, body, reqEditors...)
@@ -2313,6 +3049,67 @@ func (c *ClientWithResponses) SearchSpaceWithResponse(ctx context.Context, space
 		return nil, err
 	}
 	return ParseSearchSpaceResponse(rsp)
+}
+
+// ListTypesWithResponse request returning *ListTypesResponse
+func (c *ClientWithResponses) ListTypesWithResponse(ctx context.Context, spaceId string, params *ListTypesParams, reqEditors ...RequestEditorFn) (*ListTypesResponse, error) {
+	rsp, err := c.ListTypes(ctx, spaceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTypesResponse(rsp)
+}
+
+// CreateTypeWithBodyWithResponse request with arbitrary body returning *CreateTypeResponse
+func (c *ClientWithResponses) CreateTypeWithBodyWithResponse(ctx context.Context, spaceId string, params *CreateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTypeResponse, error) {
+	rsp, err := c.CreateTypeWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTypeResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTypeWithResponse(ctx context.Context, spaceId string, params *CreateTypeParams, body CreateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTypeResponse, error) {
+	rsp, err := c.CreateType(ctx, spaceId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTypeResponse(rsp)
+}
+
+// DeleteTypeWithResponse request returning *DeleteTypeResponse
+func (c *ClientWithResponses) DeleteTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *DeleteTypeParams, reqEditors ...RequestEditorFn) (*DeleteTypeResponse, error) {
+	rsp, err := c.DeleteType(ctx, spaceId, typeId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTypeResponse(rsp)
+}
+
+// GetTypeWithResponse request returning *GetTypeResponse
+func (c *ClientWithResponses) GetTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *GetTypeParams, reqEditors ...RequestEditorFn) (*GetTypeResponse, error) {
+	rsp, err := c.GetType(ctx, spaceId, typeId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTypeResponse(rsp)
+}
+
+// UpdateTypeWithBodyWithResponse request with arbitrary body returning *UpdateTypeResponse
+func (c *ClientWithResponses) UpdateTypeWithBodyWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error) {
+	rsp, err := c.UpdateTypeWithBody(ctx, spaceId, typeId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTypeResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error) {
+	rsp, err := c.UpdateType(ctx, spaceId, typeId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTypeResponse(rsp)
 }
 
 // ParseSearchGlobalResponse parses an HTTP response from a SearchGlobalWithResponse call
@@ -2382,6 +3179,290 @@ func ParseSearchSpaceResponse(rsp *http.Response) (*SearchSpaceResponse, error) 
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTypesResponse parses an HTTP response from a ListTypesWithResponse call
+func ParseListTypesResponse(rsp *http.Response) (*ListTypesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTypesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseType
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTypeResponse parses an HTTP response from a CreateTypeWithResponse call
+func ParseCreateTypeResponse(rsp *http.Response) (*CreateTypeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTypeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest TypeResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteTypeResponse parses an HTTP response from a DeleteTypeWithResponse call
+func ParseDeleteTypeResponse(rsp *http.Response) (*DeleteTypeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTypeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TypeResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTypeResponse parses an HTTP response from a GetTypeWithResponse call
+func ParseGetTypeResponse(rsp *http.Response) (*GetTypeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTypeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TypeResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateTypeResponse parses an HTTP response from a UpdateTypeWithResponse call
+func ParseUpdateTypeResponse(rsp *http.Response) (*UpdateTypeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateTypeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TypeResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ServerError

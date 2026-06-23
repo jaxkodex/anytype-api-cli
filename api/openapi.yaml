@@ -2372,6 +2372,7 @@ components:
       - action
       - note
       type: string
+      x-go-name: TypeLayoutKind
       x-enum-varnames:
       - TypeLayoutBasic
       - TypeLayoutProfile

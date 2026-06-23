@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/jaxkodex/anytype-api-cli/internal/anytype"
 	"github.com/spf13/cobra"
 )
 
@@ -22,6 +23,17 @@ by default); override it with ANYTYPE_API_URL.`,
 	}
 
 	cmd.AddCommand(newSearchCmd())
+	cmd.AddCommand(newTypesCmd())
 
 	return cmd
+}
+
+// newClient resolves configuration from the environment and builds an
+// authenticated API client, shared by all commands.
+func newClient() (*anytype.Client, error) {
+	cfg, err := anytype.ConfigFromEnv()
+	if err != nil {
+		return nil, err
+	}
+	return anytype.NewClient(cfg)
 }
