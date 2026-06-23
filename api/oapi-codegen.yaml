@@ -9,3 +9,4 @@ output-options:
   # Add more tags here (e.g. "Spaces", "Objects") as the CLI grows.
   include-tags:
     - Search
+    - Types

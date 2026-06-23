@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"text/tabwriter"
@@ -41,12 +40,7 @@ specific object types with one or more --type flags (e.g. page, task, bookmark).
 				query = args[0]
 			}
 
-			cfg, err := anytype.ConfigFromEnv()
-			if err != nil {
-				return err
-			}
-
-			client, err := anytype.NewClient(cfg)
+			client, err := newClient()
 			if err != nil {
 				return err
 			}
@@ -62,7 +56,7 @@ specific object types with one or more --type flags (e.g. page, task, bookmark).
 			}
 
 			if jsonOut {
-				return printJSON(cmd, result)
+				return encodeJSON(cmd, result)
 			}
 			return printTable(cmd, result)
 		},
@@ -74,12 +68,6 @@ specific object types with one or more --type flags (e.g. page, task, bookmark).
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Output raw JSON")
 
 	return cmd
-}
-
-func printJSON(cmd *cobra.Command, result *api.PaginatedResponseObject) error {
-	enc := json.NewEncoder(cmd.OutOrStdout())
-	enc.SetIndent("", "  ")
-	return enc.Encode(result)
 }
 
 func printTable(cmd *cobra.Command, result *api.PaginatedResponseObject) error {
