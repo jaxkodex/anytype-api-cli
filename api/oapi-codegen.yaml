@@ -1,0 +1,11 @@
+# Configuration for oapi-codegen. Regenerate with: go generate ./...
+package: api
+output: anytype.gen.go
+generate:
+  models: true
+  client: true
+output-options:
+  # Only generate operations we currently use, plus the schemas they reference.
+  # Add more tags here (e.g. "Spaces", "Objects") as the CLI grows.
+  include-tags:
+    - Search
