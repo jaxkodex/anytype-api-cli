@@ -1,0 +1,8 @@
+# Build output
+/anytype-api
+/dist/
+/bin/
+
+# Go
+*.test
+*.out
