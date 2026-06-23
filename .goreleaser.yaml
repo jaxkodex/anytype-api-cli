@@ -15,6 +15,7 @@ builds:
     goos:
       - linux
       - windows
+      - darwin
     goarch:
       - amd64
       - arm64
@@ -28,11 +29,7 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- .Version }}_
-      {{- .Os }}_
-      {{- .Arch }}
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"
