@@ -2,12 +2,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
 )
 
 func main() {
-	if err := newRootCmd().Execute(); err != nil {
+	// Cancel the command context on Ctrl+C (and SIGTERM) so in-flight HTTP
+	// requests are aborted promptly.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	if err := newRootCmd().ExecuteContext(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -52,7 +51,7 @@ specific object types with one or more --type flags (e.g. page, task, bookmark).
 				return err
 			}
 
-			result, err := client.Search(context.Background(), anytype.SearchOptions{
+			result, err := client.Search(cmd.Context(), anytype.SearchOptions{
 				Query:  query,
 				Types:  types,
 				Limit:  limit,
@@ -85,6 +84,11 @@ func printJSON(cmd *cobra.Command, result *api.PaginatedResponseObject) error {
 
 func printTable(cmd *cobra.Command, result *api.PaginatedResponseObject) error {
 	out := cmd.OutOrStdout()
+
+	if result == nil {
+		fmt.Fprintln(out, "No objects matched your search.")
+		return nil
+	}
 
 	objects := deref(result.Data)
 	if len(objects) == 0 {
@@ -153,13 +157,14 @@ func shortID(id *string) string {
 }
 
 func truncate(s string, n int) string {
-	if len(s) <= n {
+	runes := []rune(s)
+	if len(runes) <= n {
 		return s
 	}
 	if n <= 1 {
-		return s[:n]
+		return string(runes[:n])
 	}
-	return s[:n-1] + "…"
+	return string(runes[:n-1]) + "…"
 }
 
 func deref[T any](p *T) T {
