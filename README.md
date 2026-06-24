@@ -12,8 +12,10 @@ in lockstep with the published contract.
 Implements global **search** (`POST /v1/search`), **types** inspection
 (`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`), **files**
 management (upload, download and delete via `.../files` and
-`.../files/{file_id}`) and **lists** (collections/sets): inspect their views and
-objects, and add/remove objects via `.../lists/{list_id}/...`. The architecture
+`.../files/{file_id}`), **lists** (collections/sets): inspect their views and
+objects, and add/remove objects via `.../lists/{list_id}/...`, and
+**properties** management (list, get, create, update and delete via
+`.../properties` and `.../properties/{property_id}`). The architecture
 is set up so more commands (spaces, objects, …) can be added incrementally.
 
 ## Install
