@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -658,6 +659,24 @@ type FileIcon struct {
 	Format *IconFormat `json:"format,omitempty"`
 }
 
+// FileUploadResponse defines model for FileUploadResponse.
+type FileUploadResponse struct {
+	// Extension File extension without dot, when known
+	Extension *string `json:"extension,omitempty"`
+
+	// Media MIME type (e.g. "image/png")
+	Media *string `json:"media,omitempty"`
+
+	// Name Original file name as stored
+	Name *string `json:"name,omitempty"`
+
+	// ObjectId File object ID
+	ObjectId *string `json:"object_id,omitempty"`
+
+	// SizeInBytes Size of the uploaded file
+	SizeInBytes *int `json:"size_in_bytes,omitempty"`
+}
+
 // FilesFilterItem defines model for FilesFilterItem.
 type FilesFilterItem struct {
 	// Condition The filter condition
@@ -1254,6 +1273,36 @@ type SearchGlobalParams struct {
 	AnytypeVersion string `json:"Anytype-Version"`
 }
 
+// UploadFileMultipartBody defines parameters for UploadFile.
+type UploadFileMultipartBody struct {
+	// File The file to upload
+	File openapi_types.File `json:"file"`
+}
+
+// UploadFileParams defines parameters for UploadFile.
+type UploadFileParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// DeleteFileParams defines parameters for DeleteFile.
+type DeleteFileParams struct {
+	// SkipBin When true, permanently delete instead of moving to bin
+	SkipBin *bool `form:"skip_bin,omitempty" json:"skip_bin,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// DownloadFileParams defines parameters for DownloadFile.
+type DownloadFileParams struct {
+	// Width Optional pixel width for image variants; ignored on non-images
+	Width *int `form:"width,omitempty" json:"width,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
 // SearchSpaceParams defines parameters for SearchSpace.
 type SearchSpaceParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1304,6 +1353,9 @@ type UpdateTypeParams struct {
 
 // SearchGlobalJSONRequestBody defines body for SearchGlobal for application/json ContentType.
 type SearchGlobalJSONRequestBody = SearchRequest
+
+// UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data ContentType.
+type UploadFileMultipartRequestBody UploadFileMultipartBody
 
 // SearchSpaceJSONRequestBody defines body for SearchSpace for application/json ContentType.
 type SearchSpaceJSONRequestBody = SearchRequest
@@ -2098,6 +2150,15 @@ type ClientInterface interface {
 
 	SearchGlobal(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UploadFileWithBody request with any body
+	UploadFileWithBody(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteFile request
+	DeleteFile(ctx context.Context, spaceId string, fileId string, params *DeleteFileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DownloadFile request
+	DownloadFile(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchSpaceWithBody request with any body
 	SearchSpaceWithBody(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2137,6 +2198,42 @@ func (c *Client) SearchGlobalWithBody(ctx context.Context, params *SearchGlobalP
 
 func (c *Client) SearchGlobal(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSearchGlobalRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UploadFileWithBody(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUploadFileRequestWithBody(c.Server, spaceId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteFile(ctx context.Context, spaceId string, fileId string, params *DeleteFileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteFileRequest(c.Server, spaceId, fileId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DownloadFile(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDownloadFileRequest(c.Server, spaceId, fileId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2329,6 +2426,207 @@ func NewSearchGlobalRequestWithBody(server string, params *SearchGlobalParams, c
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUploadFileRequestWithBody generates requests for UploadFile with any type of body
+func NewUploadFileRequestWithBody(server string, spaceId string, params *UploadFileParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/files", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteFileRequest generates requests for DeleteFile
+func NewDeleteFileRequest(server string, spaceId string, fileId string, params *DeleteFileParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "file_id", runtime.ParamLocationPath, fileId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/files/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.SkipBin != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip_bin", runtime.ParamLocationQuery, *params.SkipBin); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDownloadFileRequest generates requests for DownloadFile
+func NewDownloadFileRequest(server string, spaceId string, fileId string, params *DownloadFileParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "file_id", runtime.ParamLocationPath, fileId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/files/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Width != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "width", runtime.ParamLocationQuery, *params.Width); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -2812,6 +3110,15 @@ type ClientWithResponsesInterface interface {
 
 	SearchGlobalWithResponse(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchGlobalResponse, error)
 
+	// UploadFileWithBodyWithResponse request with any body
+	UploadFileWithBodyWithResponse(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadFileResponse, error)
+
+	// DeleteFileWithResponse request
+	DeleteFileWithResponse(ctx context.Context, spaceId string, fileId string, params *DeleteFileParams, reqEditors ...RequestEditorFn) (*DeleteFileResponse, error)
+
+	// DownloadFileWithResponse request
+	DownloadFileWithResponse(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*DownloadFileResponse, error)
+
 	// SearchSpaceWithBodyWithResponse request with any body
 	SearchSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error)
 
@@ -2855,6 +3162,84 @@ func (r SearchGlobalResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SearchGlobalResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UploadFileResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FileUploadResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r UploadFileResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UploadFileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteFileResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON204      *string
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteFileResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteFileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DownloadFileResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r DownloadFileResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DownloadFileResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3034,6 +3419,33 @@ func (c *ClientWithResponses) SearchGlobalWithResponse(ctx context.Context, para
 	return ParseSearchGlobalResponse(rsp)
 }
 
+// UploadFileWithBodyWithResponse request with arbitrary body returning *UploadFileResponse
+func (c *ClientWithResponses) UploadFileWithBodyWithResponse(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadFileResponse, error) {
+	rsp, err := c.UploadFileWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUploadFileResponse(rsp)
+}
+
+// DeleteFileWithResponse request returning *DeleteFileResponse
+func (c *ClientWithResponses) DeleteFileWithResponse(ctx context.Context, spaceId string, fileId string, params *DeleteFileParams, reqEditors ...RequestEditorFn) (*DeleteFileResponse, error) {
+	rsp, err := c.DeleteFile(ctx, spaceId, fileId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteFileResponse(rsp)
+}
+
+// DownloadFileWithResponse request returning *DownloadFileResponse
+func (c *ClientWithResponses) DownloadFileWithResponse(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*DownloadFileResponse, error) {
+	rsp, err := c.DownloadFile(ctx, spaceId, fileId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDownloadFileResponse(rsp)
+}
+
 // SearchSpaceWithBodyWithResponse request with arbitrary body returning *SearchSpaceResponse
 func (c *ClientWithResponses) SearchSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error) {
 	rsp, err := c.SearchSpaceWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
@@ -3139,6 +3551,168 @@ func ParseSearchGlobalResponse(rsp *http.Response) (*SearchGlobalResponse, error
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUploadFileResponse parses an HTTP response from a UploadFileWithResponse call
+func ParseUploadFileResponse(rsp *http.Response) (*UploadFileResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UploadFileResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FileUploadResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteFileResponse parses an HTTP response from a DeleteFileWithResponse call
+func ParseDeleteFileResponse(rsp *http.Response) (*DeleteFileResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteFileResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 204:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON204 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDownloadFileResponse parses an HTTP response from a DownloadFileWithResponse call
+func ParseDownloadFileResponse(rsp *http.Response) (*DownloadFileResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DownloadFileResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ServerError

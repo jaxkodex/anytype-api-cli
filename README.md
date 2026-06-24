@@ -9,9 +9,11 @@ in lockstep with the published contract.
 
 ## Status
 
-Implements global **search** (`POST /v1/search`) and **types** inspection
-(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`). The architecture
-is set up so more commands (spaces, objects, …) can be added incrementally.
+Implements global **search** (`POST /v1/search`), **types** inspection
+(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`) and **files**
+management (upload, download and delete via `.../files` and
+`.../files/{file_id}`). The architecture is set up so more commands (spaces,
+objects, …) can be added incrementally.
 
 ## Install
 
@@ -116,6 +118,46 @@ The type definition for `create`/`update` can come from a `--file` JSON payload
 (matching the API's `CreateTypeRequest`/`UpdateTypeRequest` shape), from the
 convenience flags, or both. When combined, flags take precedence over fields in
 the payload, so a file can serve as a template you tweak per invocation.
+
+### `files`
+
+Files are scoped to a space, so every subcommand requires a `--space` id.
+
+```sh
+# Upload a local file
+anytype-api files upload ./photo.png --space bafyre...
+
+# Machine-readable output for the uploaded file object
+anytype-api files upload ./photo.png --space bafyre... --json
+
+# Download a file to a sensible local filename
+anytype-api files download bafyre...file-id --space bafyre...
+
+# Download to a specific path
+anytype-api files download bafyre...file-id --space bafyre... --output photo.png
+
+# Stream to stdout for piping (also the default when stdout is not a terminal)
+anytype-api files download bafyre...file-id --space bafyre... --output - > photo.png
+
+# Delete (move to bin), with confirmation
+anytype-api files delete bafyre...file-id --space bafyre...
+
+# Delete permanently, without prompting (for scripts)
+anytype-api files delete bafyre...file-id --space bafyre... --skip-bin --yes
+```
+
+| Flag         | Short | Default | Description                                      |
+| ------------ | ----- | ------- | ------------------------------------------------ |
+| `--space`    | `-s`  | —       | Space id to operate on (**required**)            |
+| `--output`   | `-o`  | —       | Destination path, `-` for stdout (`download`)    |
+| `--skip-bin` |       | `false` | Permanently delete instead of the bin (`delete`) |
+| `--yes`      | `-y`  | `false` | Skip the confirmation prompt (`delete`)          |
+| `--json`     |       | `false` | Emit the raw API response as JSON (`upload`)     |
+
+`download` writes to `--output` when given (`-` means stdout). Without
+`--output`, it streams to stdout when that is not a terminal (so the command
+pipes safely), otherwise it writes to a file named after the file id with an
+extension inferred from the response media type.
 
 ## Project layout
 
