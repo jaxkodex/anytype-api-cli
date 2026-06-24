@@ -475,10 +475,17 @@ const (
 	PropertyFormatUrl         PropertyFormat = "url"
 )
 
+// Defines values for SortSortType.
+const (
+	SortSortTypeAsc    SortSortType = "asc"
+	SortSortTypeCustom SortSortType = "custom"
+	SortSortTypeDesc   SortSortType = "desc"
+)
+
 // Defines values for SortDirection.
 const (
-	Asc  SortDirection = "asc"
-	Desc SortDirection = "desc"
+	SortDirectionAsc  SortDirection = "asc"
+	SortDirectionDesc SortDirection = "desc"
 )
 
 // Defines values for SortProperty.
@@ -508,6 +515,22 @@ const (
 	TypeLayoutNote    TypeLayoutKind = "note"
 	TypeLayoutProfile TypeLayoutKind = "profile"
 )
+
+// Defines values for ViewLayout.
+const (
+	Calendar ViewLayout = "calendar"
+	Gallery  ViewLayout = "gallery"
+	Graph    ViewLayout = "graph"
+	Grid     ViewLayout = "grid"
+	Kanban   ViewLayout = "kanban"
+	List     ViewLayout = "list"
+)
+
+// AddObjectsToListRequest defines model for AddObjectsToListRequest.
+type AddObjectsToListRequest struct {
+	// Objects The list of object IDs to add to the list
+	Objects *[]string `json:"objects,omitempty"`
+}
 
 // CheckboxFilterItem defines model for CheckboxFilterItem.
 type CheckboxFilterItem struct {
@@ -708,6 +731,24 @@ type FilesPropertyValue struct {
 
 	// Object The data model of the object
 	Object *string `json:"object,omitempty"`
+}
+
+// Filter defines model for Filter.
+type Filter struct {
+	// Condition The filter condition
+	Condition *FilterCondition `json:"condition,omitempty"`
+
+	// Format The format of the property
+	Format *PropertyFormat `json:"format,omitempty"`
+
+	// Id The id of the filter
+	Id *string `json:"id,omitempty"`
+
+	// PropertyKey The property key used for filtering
+	PropertyKey *string `json:"property_key,omitempty"`
+
+	// Value The value used for filtering
+	Value *string `json:"value,omitempty"`
 }
 
 // FilterCondition The filter condition
@@ -933,6 +974,15 @@ type PaginatedResponseType struct {
 	Pagination *PaginationMeta `json:"pagination,omitempty"`
 }
 
+// PaginatedResponseView defines model for PaginatedResponse-View.
+type PaginatedResponseView struct {
+	// Data The list of items in the current result set
+	Data *[]View `json:"data,omitempty"`
+
+	// Pagination The pagination metadata for the response
+	Pagination *PaginationMeta `json:"pagination,omitempty"`
+}
+
 // PaginationMeta The pagination metadata for the response
 type PaginationMeta struct {
 	// HasMore Indicates if there are more items available beyond the current result set
@@ -1082,6 +1132,24 @@ type ServerError struct {
 	Object  *string `json:"object,omitempty"`
 	Status  *int    `json:"status,omitempty"`
 }
+
+// Sort defines model for Sort.
+type Sort struct {
+	// Format The format of the property
+	Format *PropertyFormat `json:"format,omitempty"`
+
+	// Id The id of the sort
+	Id *string `json:"id,omitempty"`
+
+	// PropertyKey The property key used for sorting
+	PropertyKey *string `json:"property_key,omitempty"`
+
+	// SortType The sort direction
+	SortType *SortSortType `json:"sort_type,omitempty"`
+}
+
+// SortSortType The sort direction
+type SortSortType string
 
 // SortDirection The direction to sort the search results by
 type SortDirection string
@@ -1261,6 +1329,27 @@ type ValidationError struct {
 	Status  *int    `json:"status,omitempty"`
 }
 
+// View defines model for View.
+type View struct {
+	// Filters The list of filters
+	Filters *[]Filter `json:"filters,omitempty"`
+
+	// Id The id of the view
+	Id *string `json:"id,omitempty"`
+
+	// Layout The layout of the view
+	Layout *ViewLayout `json:"layout,omitempty"`
+
+	// Name The name of the view
+	Name *string `json:"name,omitempty"`
+
+	// Sorts The list of sorts
+	Sorts *[]Sort `json:"sorts,omitempty"`
+}
+
+// ViewLayout The layout of the view
+type ViewLayout string
+
 // SearchGlobalParams defines parameters for SearchGlobal.
 type SearchGlobalParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1298,6 +1387,42 @@ type DeleteFileParams struct {
 type DownloadFileParams struct {
 	// Width Optional pixel width for image variants; ignored on non-images
 	Width *int `form:"width,omitempty" json:"width,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// AddListObjectsParams defines parameters for AddListObjects.
+type AddListObjectsParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// RemoveListObjectParams defines parameters for RemoveListObject.
+type RemoveListObjectParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetListViewsParams defines parameters for GetListViews.
+type GetListViewsParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetListObjectsParams defines parameters for GetListObjects.
+type GetListObjectsParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// AnytypeVersion The version of the API to use
 	AnytypeVersion string `json:"Anytype-Version"`
@@ -1356,6 +1481,9 @@ type SearchGlobalJSONRequestBody = SearchRequest
 
 // UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data ContentType.
 type UploadFileMultipartRequestBody UploadFileMultipartBody
+
+// AddListObjectsJSONRequestBody defines body for AddListObjects for application/json ContentType.
+type AddListObjectsJSONRequestBody = AddObjectsToListRequest
 
 // SearchSpaceJSONRequestBody defines body for SearchSpace for application/json ContentType.
 type SearchSpaceJSONRequestBody = SearchRequest
@@ -2159,6 +2287,20 @@ type ClientInterface interface {
 	// DownloadFile request
 	DownloadFile(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// AddListObjectsWithBody request with any body
+	AddListObjectsWithBody(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddListObjects(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, body AddListObjectsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveListObject request
+	RemoveListObject(ctx context.Context, spaceId string, listId string, objectId string, params *RemoveListObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetListViews request
+	GetListViews(ctx context.Context, spaceId string, listId string, params *GetListViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetListObjects request
+	GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchSpaceWithBody request with any body
 	SearchSpaceWithBody(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2234,6 +2376,66 @@ func (c *Client) DeleteFile(ctx context.Context, spaceId string, fileId string, 
 
 func (c *Client) DownloadFile(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDownloadFileRequest(c.Server, spaceId, fileId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddListObjectsWithBody(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddListObjectsRequestWithBody(c.Server, spaceId, listId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddListObjects(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, body AddListObjectsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddListObjectsRequest(c.Server, spaceId, listId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveListObject(ctx context.Context, spaceId string, listId string, objectId string, params *RemoveListObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveListObjectRequest(c.Server, spaceId, listId, objectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetListViews(ctx context.Context, spaceId string, listId string, params *GetListViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetListViewsRequest(c.Server, spaceId, listId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetListObjectsRequest(c.Server, spaceId, listId, viewId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2607,6 +2809,325 @@ func NewDownloadFileRequest(server string, spaceId string, fileId string, params
 		if params.Width != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "width", runtime.ParamLocationQuery, *params.Width); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewAddListObjectsRequest calls the generic AddListObjects builder with application/json body
+func NewAddListObjectsRequest(server string, spaceId string, listId string, params *AddListObjectsParams, body AddListObjectsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddListObjectsRequestWithBody(server, spaceId, listId, params, "application/json", bodyReader)
+}
+
+// NewAddListObjectsRequestWithBody generates requests for AddListObjects with any type of body
+func NewAddListObjectsRequestWithBody(server string, spaceId string, listId string, params *AddListObjectsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "list_id", runtime.ParamLocationPath, listId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/lists/%s/objects", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewRemoveListObjectRequest generates requests for RemoveListObject
+func NewRemoveListObjectRequest(server string, spaceId string, listId string, objectId string, params *RemoveListObjectParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "list_id", runtime.ParamLocationPath, listId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "object_id", runtime.ParamLocationPath, objectId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/lists/%s/objects/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetListViewsRequest generates requests for GetListViews
+func NewGetListViewsRequest(server string, spaceId string, listId string, params *GetListViewsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "list_id", runtime.ParamLocationPath, listId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/lists/%s/views", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetListObjectsRequest generates requests for GetListObjects
+func NewGetListObjectsRequest(server string, spaceId string, listId string, viewId string, params *GetListObjectsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "list_id", runtime.ParamLocationPath, listId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "view_id", runtime.ParamLocationPath, viewId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/lists/%s/views/%s/objects", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -3119,6 +3640,20 @@ type ClientWithResponsesInterface interface {
 	// DownloadFileWithResponse request
 	DownloadFileWithResponse(ctx context.Context, spaceId string, fileId string, params *DownloadFileParams, reqEditors ...RequestEditorFn) (*DownloadFileResponse, error)
 
+	// AddListObjectsWithBodyWithResponse request with any body
+	AddListObjectsWithBodyWithResponse(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddListObjectsResponse, error)
+
+	AddListObjectsWithResponse(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, body AddListObjectsJSONRequestBody, reqEditors ...RequestEditorFn) (*AddListObjectsResponse, error)
+
+	// RemoveListObjectWithResponse request
+	RemoveListObjectWithResponse(ctx context.Context, spaceId string, listId string, objectId string, params *RemoveListObjectParams, reqEditors ...RequestEditorFn) (*RemoveListObjectResponse, error)
+
+	// GetListViewsWithResponse request
+	GetListViewsWithResponse(ctx context.Context, spaceId string, listId string, params *GetListViewsParams, reqEditors ...RequestEditorFn) (*GetListViewsResponse, error)
+
+	// GetListObjectsWithResponse request
+	GetListObjectsWithResponse(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*GetListObjectsResponse, error)
+
 	// SearchSpaceWithBodyWithResponse request with any body
 	SearchSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error)
 
@@ -3240,6 +3775,110 @@ func (r DownloadFileResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DownloadFileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddListObjectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *string
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r AddListObjectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddListObjectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveListObjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *string
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveListObjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveListObjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetListViewsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseView
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetListViewsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetListViewsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetListObjectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseObject
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetListObjectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetListObjectsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3444,6 +4083,50 @@ func (c *ClientWithResponses) DownloadFileWithResponse(ctx context.Context, spac
 		return nil, err
 	}
 	return ParseDownloadFileResponse(rsp)
+}
+
+// AddListObjectsWithBodyWithResponse request with arbitrary body returning *AddListObjectsResponse
+func (c *ClientWithResponses) AddListObjectsWithBodyWithResponse(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddListObjectsResponse, error) {
+	rsp, err := c.AddListObjectsWithBody(ctx, spaceId, listId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddListObjectsResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddListObjectsWithResponse(ctx context.Context, spaceId string, listId string, params *AddListObjectsParams, body AddListObjectsJSONRequestBody, reqEditors ...RequestEditorFn) (*AddListObjectsResponse, error) {
+	rsp, err := c.AddListObjects(ctx, spaceId, listId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddListObjectsResponse(rsp)
+}
+
+// RemoveListObjectWithResponse request returning *RemoveListObjectResponse
+func (c *ClientWithResponses) RemoveListObjectWithResponse(ctx context.Context, spaceId string, listId string, objectId string, params *RemoveListObjectParams, reqEditors ...RequestEditorFn) (*RemoveListObjectResponse, error) {
+	rsp, err := c.RemoveListObject(ctx, spaceId, listId, objectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveListObjectResponse(rsp)
+}
+
+// GetListViewsWithResponse request returning *GetListViewsResponse
+func (c *ClientWithResponses) GetListViewsWithResponse(ctx context.Context, spaceId string, listId string, params *GetListViewsParams, reqEditors ...RequestEditorFn) (*GetListViewsResponse, error) {
+	rsp, err := c.GetListViews(ctx, spaceId, listId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetListViewsResponse(rsp)
+}
+
+// GetListObjectsWithResponse request returning *GetListObjectsResponse
+func (c *ClientWithResponses) GetListObjectsWithResponse(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*GetListObjectsResponse, error) {
+	rsp, err := c.GetListObjects(ctx, spaceId, listId, viewId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetListObjectsResponse(rsp)
 }
 
 // SearchSpaceWithBodyWithResponse request with arbitrary body returning *SearchSpaceResponse
@@ -3699,6 +4382,222 @@ func ParseDownloadFileResponse(rsp *http.Response) (*DownloadFileResponse, error
 			return nil, err
 		}
 		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddListObjectsResponse parses an HTTP response from a AddListObjectsWithResponse call
+func ParseAddListObjectsResponse(rsp *http.Response) (*AddListObjectsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddListObjectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveListObjectResponse parses an HTTP response from a RemoveListObjectWithResponse call
+func ParseRemoveListObjectResponse(rsp *http.Response) (*RemoveListObjectResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveListObjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetListViewsResponse parses an HTTP response from a GetListViewsWithResponse call
+func ParseGetListViewsResponse(rsp *http.Response) (*GetListViewsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetListViewsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseView
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetListObjectsResponse parses an HTTP response from a GetListObjectsWithResponse call
+func ParseGetListObjectsResponse(rsp *http.Response) (*GetListObjectsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetListObjectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseObject
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest UnauthorizedError

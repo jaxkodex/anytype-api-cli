@@ -10,10 +10,11 @@ in lockstep with the published contract.
 ## Status
 
 Implements global **search** (`POST /v1/search`), **types** inspection
-(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`) and **files**
+(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`), **files**
 management (upload, download and delete via `.../files` and
-`.../files/{file_id}`). The architecture is set up so more commands (spaces,
-objects, …) can be added incrementally.
+`.../files/{file_id}`) and **lists** (collections/sets): inspect their views and
+objects, and add/remove objects via `.../lists/{list_id}/...`. The architecture
+is set up so more commands (spaces, objects, …) can be added incrementally.
 
 ## Install
 
@@ -159,12 +160,50 @@ anytype-api files delete bafyre...file-id --space bafyre... --skip-bin --yes
 pipes safely), otherwise it writes to a file named after the file id with an
 extension inferred from the response media type.
 
+### `lists`
+
+Lists (collections and sets) are scoped to a space, so every subcommand requires
+a `--space` id. Find a list id by searching the space for objects of type
+`collection` or `set`.
+
+```sh
+# List the views defined for a list
+anytype-api lists views bafyre...list-id --space bafyre...
+
+# List the objects in a view (filtered and sorted by that view)
+anytype-api lists objects bafyre...list-id --space bafyre... --view 67bf3f21...
+
+# Add one or more objects to a collection
+anytype-api lists add bafyre...list-id --space bafyre... bafyreA... bafyreB...
+
+# Remove an object from a collection, with confirmation
+anytype-api lists remove bafyre...list-id bafyreA... --space bafyre...
+
+# Remove without prompting (for scripts)
+anytype-api lists remove bafyre...list-id bafyreA... --space bafyre... --yes
+
+# Machine-readable output
+anytype-api lists views bafyre...list-id --space bafyre... --json
+```
+
+| Flag       | Short | Default | Description                                         |
+| ---------- | ----- | ------- | --------------------------------------------------- |
+| `--space`  | `-s`  | —       | Space id the list belongs to (**required**)         |
+| `--view`   |       | —       | View id to filter/sort by (**required**, `objects`) |
+| `--limit`  | `-L`  | `100`   | Maximum results to return (`views`, `objects`)      |
+| `--offset` |       | `0`     | Results to skip (`views`, `objects`)                |
+| `--yes`    | `-y`  | `false` | Skip the confirmation prompt (`remove`)             |
+| `--json`   |       | `false` | Emit the raw API response as JSON                   |
+
+Only collections can be modified with `add`/`remove`; the objects of a set are
+determined by its query.
+
 ## Project layout
 
 ```
 api/
   openapi.yaml         # Vendored Anytype OpenAPI spec (source of truth)
-  oapi-codegen.yaml    # Generator config (scoped to the Search and Types tags)
+  oapi-codegen.yaml    # Generator config (scoped to the Search, Types and Lists tags)
 internal/
   api/                 # Auto-generated client + models (do not edit by hand)
   anytype/             # Thin wrapper: env config, auth, request helpers
