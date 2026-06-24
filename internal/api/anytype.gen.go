@@ -526,6 +526,11 @@ const (
 	List     ViewLayout = "list"
 )
 
+// Defines values for GetObjectParamsFormat.
+const (
+	Md GetObjectParamsFormat = "md"
+)
+
 // AddObjectsToListRequest defines model for AddObjectsToListRequest.
 type AddObjectsToListRequest struct {
 	// Objects The list of object IDs to add to the list
@@ -542,6 +547,13 @@ type CheckboxFilterItem struct {
 
 	// PropertyKey The property key to filter on
 	PropertyKey *string `json:"property_key,omitempty"`
+}
+
+// CheckboxPropertyLinkValue defines model for CheckboxPropertyLinkValue.
+type CheckboxPropertyLinkValue struct {
+	// Checkbox The checkbox value of the property
+	Checkbox *bool   `json:"checkbox,omitempty"`
+	Key      *string `json:"key,omitempty"`
 }
 
 // CheckboxPropertyValue defines model for CheckboxPropertyValue.
@@ -567,6 +579,27 @@ type CheckboxPropertyValue struct {
 
 // Color The color of the icon
 type Color string
+
+// CreateObjectRequest defines model for CreateObjectRequest.
+type CreateObjectRequest struct {
+	// Body The body of the object
+	Body *string `json:"body,omitempty"`
+
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Name The name of the object
+	Name *string `json:"name,omitempty"`
+
+	// Properties The properties to set on the object; see ListTypes or GetType endpoints for linked properties
+	Properties *[]PropertyLinkWithValue `json:"properties,omitempty"`
+
+	// TemplateId The id of the template to use
+	TemplateId *string `json:"template_id,omitempty"`
+
+	// TypeKey The key of the type of object to create
+	TypeKey string `json:"type_key"`
+}
 
 // CreatePropertyRequest defines model for CreatePropertyRequest.
 type CreatePropertyRequest struct {
@@ -628,6 +661,13 @@ type DateFilterItem struct {
 	PropertyKey *string `json:"property_key,omitempty"`
 }
 
+// DatePropertyLinkValue defines model for DatePropertyLinkValue.
+type DatePropertyLinkValue struct {
+	// Date The date value of the property. Accepts dates in RFC3339 format (2006-01-02T15:04:05Z) or date-only format (2006-01-02)
+	Date *string `json:"date,omitempty"`
+	Key  *string `json:"key,omitempty"`
+}
+
 // DatePropertyValue defines model for DatePropertyValue.
 type DatePropertyValue struct {
 	// Date The date value of the property. Returns dates in RFC3339 format (2006-01-02T15:04:05Z)
@@ -659,6 +699,13 @@ type EmailFilterItem struct {
 
 	// PropertyKey The property key to filter on
 	PropertyKey *string `json:"property_key,omitempty"`
+}
+
+// EmailPropertyLinkValue defines model for EmailPropertyLinkValue.
+type EmailPropertyLinkValue struct {
+	// Email The email value of the property
+	Email *string `json:"email,omitempty"`
+	Key   *string `json:"key,omitempty"`
 }
 
 // EmailPropertyValue defines model for EmailPropertyValue.
@@ -737,6 +784,13 @@ type FilesFilterItem struct {
 
 	// PropertyKey The property key to filter on
 	PropertyKey *string `json:"property_key,omitempty"`
+}
+
+// FilesPropertyLinkValue defines model for FilesPropertyLinkValue.
+type FilesPropertyLinkValue struct {
+	// Files The file ids of the property
+	Files *[]string `json:"files,omitempty"`
+	Key   *string   `json:"key,omitempty"`
 }
 
 // FilesPropertyValue defines model for FilesPropertyValue.
@@ -840,6 +894,14 @@ type MultiSelectFilterItem struct {
 	PropertyKey *string `json:"property_key,omitempty"`
 }
 
+// MultiSelectPropertyLinkValue defines model for MultiSelectPropertyLinkValue.
+type MultiSelectPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// MultiSelect The selected tags (by key, e.g., "important", or ID, e.g., "bafyrei...") of the property; see ListTags endpoint for valid values
+	MultiSelect *[]string `json:"multi_select,omitempty"`
+}
+
 // MultiSelectPropertyValue defines model for MultiSelectPropertyValue.
 type MultiSelectPropertyValue struct {
 	// Format The format of the property
@@ -891,6 +953,14 @@ type NumberFilterItem struct {
 
 	// PropertyKey The property key to filter on
 	PropertyKey *string `json:"property_key,omitempty"`
+}
+
+// NumberPropertyLinkValue defines model for NumberPropertyLinkValue.
+type NumberPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Number The number value of the property
+	Number *float32 `json:"number,omitempty"`
 }
 
 // NumberPropertyValue defines model for NumberPropertyValue.
@@ -950,6 +1020,48 @@ type Object struct {
 // ObjectLayout The layout of the object
 type ObjectLayout = string
 
+// ObjectResponse defines model for ObjectResponse.
+type ObjectResponse struct {
+	// Object The object
+	Object *ObjectWithBody `json:"object,omitempty"`
+}
+
+// ObjectWithBody The object
+type ObjectWithBody struct {
+	// Archived Whether the object is archived
+	Archived *bool `json:"archived,omitempty"`
+
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Id The id of the object
+	Id *string `json:"id,omitempty"`
+
+	// Layout The layout of the object
+	Layout *string `json:"layout,omitempty"`
+
+	// Markdown The markdown body of the object
+	Markdown *string `json:"markdown,omitempty"`
+
+	// Name The name of the object
+	Name *string `json:"name,omitempty"`
+
+	// Object The data model of the object
+	Object *string `json:"object,omitempty"`
+
+	// Properties The properties of the object
+	Properties *[]PropertyWithValue `json:"properties,omitempty"`
+
+	// Snippet The snippet of the object, especially important for notes as they don't have a name
+	Snippet *string `json:"snippet,omitempty"`
+
+	// SpaceId The id of the space the object is in
+	SpaceId *string `json:"space_id,omitempty"`
+
+	// Type The type of the object, or null if the type has been deleted.
+	Type *Type `json:"type"`
+}
+
 // ObjectsFilterItem defines model for ObjectsFilterItem.
 type ObjectsFilterItem struct {
 	// Condition The filter condition
@@ -960,6 +1072,14 @@ type ObjectsFilterItem struct {
 
 	// PropertyKey The property key to filter on
 	PropertyKey *string `json:"property_key,omitempty"`
+}
+
+// ObjectsPropertyLinkValue defines model for ObjectsPropertyLinkValue.
+type ObjectsPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Objects The object ids of the property
+	Objects *[]string `json:"objects,omitempty"`
 }
 
 // ObjectsPropertyValue defines model for ObjectsPropertyValue.
@@ -1055,6 +1175,14 @@ type PhoneFilterItem struct {
 	PropertyKey *string `json:"property_key,omitempty"`
 }
 
+// PhonePropertyLinkValue defines model for PhonePropertyLinkValue.
+type PhonePropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Phone The phone value of the property
+	Phone *string `json:"phone,omitempty"`
+}
+
 // PhonePropertyValue defines model for PhonePropertyValue.
 type PhonePropertyValue struct {
 	// Format The format of the property
@@ -1109,6 +1237,11 @@ type PropertyLink struct {
 	Name string `json:"name"`
 }
 
+// PropertyLinkWithValue defines model for PropertyLinkWithValue.
+type PropertyLinkWithValue struct {
+	union json.RawMessage
+}
+
 // PropertyResponse defines model for PropertyResponse.
 type PropertyResponse struct {
 	// Property The property
@@ -1152,6 +1285,14 @@ type SelectFilterItem struct {
 	PropertyKey *string `json:"property_key,omitempty"`
 
 	// Select Tag Id - for eq/ne/in conditions (single selection)
+	Select *string `json:"select,omitempty"`
+}
+
+// SelectPropertyLinkValue defines model for SelectPropertyLinkValue.
+type SelectPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Select The selected tag (by key, e.g., "important", or ID, e.g., "bafyrei...") of the property; see ListTags endpoint for valid values
 	Select *string `json:"select,omitempty"`
 }
 
@@ -1253,6 +1394,14 @@ type TextFilterItem struct {
 	Text *string `json:"text,omitempty"`
 }
 
+// TextPropertyLinkValue defines model for TextPropertyLinkValue.
+type TextPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Text The text value of the property
+	Text *string `json:"text,omitempty"`
+}
+
 // TextPropertyValue defines model for TextPropertyValue.
 type TextPropertyValue struct {
 	// Format The format of the property
@@ -1324,6 +1473,24 @@ type UnauthorizedError struct {
 	Status  *int    `json:"status,omitempty"`
 }
 
+// UpdateObjectRequest defines model for UpdateObjectRequest.
+type UpdateObjectRequest struct {
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Markdown The updated body of the object
+	Markdown *string `json:"markdown,omitempty"`
+
+	// Name The name of the object
+	Name *string `json:"name,omitempty"`
+
+	// Properties The properties to set for the object; see ListTypes or GetType endpoints for linked properties
+	Properties *[]PropertyLinkWithValue `json:"properties,omitempty"`
+
+	// TypeKey The key of the type of object to set
+	TypeKey *string `json:"type_key,omitempty"`
+}
+
 // UpdatePropertyRequest defines model for UpdatePropertyRequest.
 type UpdatePropertyRequest struct {
 	// Key The key to set for the property; ; should always be snake_case, otherwise it will be converted to snake_case
@@ -1375,6 +1542,14 @@ type UrlFilterItem struct {
 	PropertyKey *string `json:"property_key,omitempty"`
 
 	// Url The Url value to filter by
+	Url *string `json:"url,omitempty"`
+}
+
+// UrlPropertyLinkValue defines model for UrlPropertyLinkValue.
+type UrlPropertyLinkValue struct {
+	Key *string `json:"key,omitempty"`
+
+	// Url The URL value of the property
 	Url *string `json:"url,omitempty"`
 }
 
@@ -1506,6 +1681,48 @@ type GetListObjectsParams struct {
 	AnytypeVersion string `json:"Anytype-Version"`
 }
 
+// ListObjectsParams defines parameters for ListObjects.
+type ListObjectsParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// CreateObjectParams defines parameters for CreateObject.
+type CreateObjectParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// DeleteObjectParams defines parameters for DeleteObject.
+type DeleteObjectParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetObjectParams defines parameters for GetObject.
+type GetObjectParams struct {
+	// Format The format to return the object body in
+	Format *GetObjectParamsFormat `form:"format,omitempty" json:"format,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetObjectParamsFormat defines parameters for GetObject.
+type GetObjectParamsFormat string
+
+// UpdateObjectParams defines parameters for UpdateObject.
+type UpdateObjectParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
 // ListPropertiesParams defines parameters for ListProperties.
 type ListPropertiesParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1628,6 +1845,12 @@ type UploadFileMultipartRequestBody UploadFileMultipartBody
 
 // AddListObjectsJSONRequestBody defines body for AddListObjects for application/json ContentType.
 type AddListObjectsJSONRequestBody = AddObjectsToListRequest
+
+// CreateObjectJSONRequestBody defines body for CreateObject for application/json ContentType.
+type CreateObjectJSONRequestBody = CreateObjectRequest
+
+// UpdateObjectJSONRequestBody defines body for UpdateObject for application/json ContentType.
+type UpdateObjectJSONRequestBody = UpdateObjectRequest
 
 // CreatePropertyJSONRequestBody defines body for CreateProperty for application/json ContentType.
 type CreatePropertyJSONRequestBody = CreatePropertyRequest
@@ -2060,6 +2283,302 @@ func (t *Icon) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsTextPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a TextPropertyLinkValue
+func (t PropertyLinkWithValue) AsTextPropertyLinkValue() (TextPropertyLinkValue, error) {
+	var body TextPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTextPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided TextPropertyLinkValue
+func (t *PropertyLinkWithValue) FromTextPropertyLinkValue(v TextPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTextPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided TextPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeTextPropertyLinkValue(v TextPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNumberPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a NumberPropertyLinkValue
+func (t PropertyLinkWithValue) AsNumberPropertyLinkValue() (NumberPropertyLinkValue, error) {
+	var body NumberPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNumberPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided NumberPropertyLinkValue
+func (t *PropertyLinkWithValue) FromNumberPropertyLinkValue(v NumberPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNumberPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided NumberPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeNumberPropertyLinkValue(v NumberPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSelectPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a SelectPropertyLinkValue
+func (t PropertyLinkWithValue) AsSelectPropertyLinkValue() (SelectPropertyLinkValue, error) {
+	var body SelectPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSelectPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided SelectPropertyLinkValue
+func (t *PropertyLinkWithValue) FromSelectPropertyLinkValue(v SelectPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSelectPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided SelectPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeSelectPropertyLinkValue(v SelectPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMultiSelectPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a MultiSelectPropertyLinkValue
+func (t PropertyLinkWithValue) AsMultiSelectPropertyLinkValue() (MultiSelectPropertyLinkValue, error) {
+	var body MultiSelectPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMultiSelectPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided MultiSelectPropertyLinkValue
+func (t *PropertyLinkWithValue) FromMultiSelectPropertyLinkValue(v MultiSelectPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMultiSelectPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided MultiSelectPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeMultiSelectPropertyLinkValue(v MultiSelectPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDatePropertyLinkValue returns the union data inside the PropertyLinkWithValue as a DatePropertyLinkValue
+func (t PropertyLinkWithValue) AsDatePropertyLinkValue() (DatePropertyLinkValue, error) {
+	var body DatePropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDatePropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided DatePropertyLinkValue
+func (t *PropertyLinkWithValue) FromDatePropertyLinkValue(v DatePropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDatePropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided DatePropertyLinkValue
+func (t *PropertyLinkWithValue) MergeDatePropertyLinkValue(v DatePropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFilesPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a FilesPropertyLinkValue
+func (t PropertyLinkWithValue) AsFilesPropertyLinkValue() (FilesPropertyLinkValue, error) {
+	var body FilesPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFilesPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided FilesPropertyLinkValue
+func (t *PropertyLinkWithValue) FromFilesPropertyLinkValue(v FilesPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFilesPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided FilesPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeFilesPropertyLinkValue(v FilesPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCheckboxPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a CheckboxPropertyLinkValue
+func (t PropertyLinkWithValue) AsCheckboxPropertyLinkValue() (CheckboxPropertyLinkValue, error) {
+	var body CheckboxPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCheckboxPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided CheckboxPropertyLinkValue
+func (t *PropertyLinkWithValue) FromCheckboxPropertyLinkValue(v CheckboxPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCheckboxPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided CheckboxPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeCheckboxPropertyLinkValue(v CheckboxPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUrlPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a UrlPropertyLinkValue
+func (t PropertyLinkWithValue) AsUrlPropertyLinkValue() (UrlPropertyLinkValue, error) {
+	var body UrlPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUrlPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided UrlPropertyLinkValue
+func (t *PropertyLinkWithValue) FromUrlPropertyLinkValue(v UrlPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUrlPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided UrlPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeUrlPropertyLinkValue(v UrlPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEmailPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a EmailPropertyLinkValue
+func (t PropertyLinkWithValue) AsEmailPropertyLinkValue() (EmailPropertyLinkValue, error) {
+	var body EmailPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEmailPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided EmailPropertyLinkValue
+func (t *PropertyLinkWithValue) FromEmailPropertyLinkValue(v EmailPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEmailPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided EmailPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeEmailPropertyLinkValue(v EmailPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPhonePropertyLinkValue returns the union data inside the PropertyLinkWithValue as a PhonePropertyLinkValue
+func (t PropertyLinkWithValue) AsPhonePropertyLinkValue() (PhonePropertyLinkValue, error) {
+	var body PhonePropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPhonePropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided PhonePropertyLinkValue
+func (t *PropertyLinkWithValue) FromPhonePropertyLinkValue(v PhonePropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePhonePropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided PhonePropertyLinkValue
+func (t *PropertyLinkWithValue) MergePhonePropertyLinkValue(v PhonePropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsObjectsPropertyLinkValue returns the union data inside the PropertyLinkWithValue as a ObjectsPropertyLinkValue
+func (t PropertyLinkWithValue) AsObjectsPropertyLinkValue() (ObjectsPropertyLinkValue, error) {
+	var body ObjectsPropertyLinkValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromObjectsPropertyLinkValue overwrites any union data inside the PropertyLinkWithValue as the provided ObjectsPropertyLinkValue
+func (t *PropertyLinkWithValue) FromObjectsPropertyLinkValue(v ObjectsPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeObjectsPropertyLinkValue performs a merge with any union data inside the PropertyLinkWithValue, using the provided ObjectsPropertyLinkValue
+func (t *PropertyLinkWithValue) MergeObjectsPropertyLinkValue(v ObjectsPropertyLinkValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PropertyLinkWithValue) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PropertyLinkWithValue) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsTextPropertyValue returns the union data inside the PropertyWithValue as a TextPropertyValue
 func (t PropertyWithValue) AsTextPropertyValue() (TextPropertyValue, error) {
 	var body TextPropertyValue
@@ -2457,6 +2976,25 @@ type ClientInterface interface {
 	// GetListObjects request
 	GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListObjects request
+	ListObjects(ctx context.Context, spaceId string, params *ListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateObjectWithBody request with any body
+	CreateObjectWithBody(ctx context.Context, spaceId string, params *CreateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateObject(ctx context.Context, spaceId string, params *CreateObjectParams, body CreateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteObject request
+	DeleteObject(ctx context.Context, spaceId string, objectId string, params *DeleteObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetObject request
+	GetObject(ctx context.Context, spaceId string, objectId string, params *GetObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateObjectWithBody request with any body
+	UpdateObjectWithBody(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateObject(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, body UpdateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListProperties request
 	ListProperties(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2630,6 +3168,90 @@ func (c *Client) GetListViews(ctx context.Context, spaceId string, listId string
 
 func (c *Client) GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetListObjectsRequest(c.Server, spaceId, listId, viewId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListObjects(ctx context.Context, spaceId string, params *ListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListObjectsRequest(c.Server, spaceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateObjectWithBody(ctx context.Context, spaceId string, params *CreateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateObjectRequestWithBody(c.Server, spaceId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateObject(ctx context.Context, spaceId string, params *CreateObjectParams, body CreateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateObjectRequest(c.Server, spaceId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteObject(ctx context.Context, spaceId string, objectId string, params *DeleteObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteObjectRequest(c.Server, spaceId, objectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetObject(ctx context.Context, spaceId string, objectId string, params *GetObjectParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetObjectRequest(c.Server, spaceId, objectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateObjectWithBody(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateObjectRequestWithBody(c.Server, spaceId, objectId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateObject(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, body UpdateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateObjectRequest(c.Server, spaceId, objectId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3510,6 +4132,348 @@ func NewGetListObjectsRequest(server string, spaceId string, listId string, view
 	if err != nil {
 		return nil, err
 	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListObjectsRequest generates requests for ListObjects
+func NewListObjectsRequest(server string, spaceId string, params *ListObjectsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/objects", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateObjectRequest calls the generic CreateObject builder with application/json body
+func NewCreateObjectRequest(server string, spaceId string, params *CreateObjectParams, body CreateObjectJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateObjectRequestWithBody(server, spaceId, params, "application/json", bodyReader)
+}
+
+// NewCreateObjectRequestWithBody generates requests for CreateObject with any type of body
+func NewCreateObjectRequestWithBody(server string, spaceId string, params *CreateObjectParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/objects", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteObjectRequest generates requests for DeleteObject
+func NewDeleteObjectRequest(server string, spaceId string, objectId string, params *DeleteObjectParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "object_id", runtime.ParamLocationPath, objectId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/objects/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetObjectRequest generates requests for GetObject
+func NewGetObjectRequest(server string, spaceId string, objectId string, params *GetObjectParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "object_id", runtime.ParamLocationPath, objectId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/objects/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Format != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "format", runtime.ParamLocationQuery, *params.Format); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateObjectRequest calls the generic UpdateObject builder with application/json body
+func NewUpdateObjectRequest(server string, spaceId string, objectId string, params *UpdateObjectParams, body UpdateObjectJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateObjectRequestWithBody(server, spaceId, objectId, params, "application/json", bodyReader)
+}
+
+// NewUpdateObjectRequestWithBody generates requests for UpdateObject with any type of body
+func NewUpdateObjectRequestWithBody(server string, spaceId string, objectId string, params *UpdateObjectParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "object_id", runtime.ParamLocationPath, objectId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/objects/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	if params != nil {
 
@@ -4653,6 +5617,25 @@ type ClientWithResponsesInterface interface {
 	// GetListObjectsWithResponse request
 	GetListObjectsWithResponse(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*GetListObjectsResponse, error)
 
+	// ListObjectsWithResponse request
+	ListObjectsWithResponse(ctx context.Context, spaceId string, params *ListObjectsParams, reqEditors ...RequestEditorFn) (*ListObjectsResponse, error)
+
+	// CreateObjectWithBodyWithResponse request with any body
+	CreateObjectWithBodyWithResponse(ctx context.Context, spaceId string, params *CreateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateObjectResponse, error)
+
+	CreateObjectWithResponse(ctx context.Context, spaceId string, params *CreateObjectParams, body CreateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateObjectResponse, error)
+
+	// DeleteObjectWithResponse request
+	DeleteObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *DeleteObjectParams, reqEditors ...RequestEditorFn) (*DeleteObjectResponse, error)
+
+	// GetObjectWithResponse request
+	GetObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *GetObjectParams, reqEditors ...RequestEditorFn) (*GetObjectResponse, error)
+
+	// UpdateObjectWithBodyWithResponse request with any body
+	UpdateObjectWithBodyWithResponse(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateObjectResponse, error)
+
+	UpdateObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, body UpdateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateObjectResponse, error)
+
 	// ListPropertiesWithResponse request
 	ListPropertiesWithResponse(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*ListPropertiesResponse, error)
 
@@ -4916,6 +5899,138 @@ func (r GetListObjectsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetListObjectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListObjectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseObject
+	JSON401      *UnauthorizedError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListObjectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListObjectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateObjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ObjectResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateObjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateObjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteObjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ObjectResponse
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteObjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteObjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetObjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ObjectResponse
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetObjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetObjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateObjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ObjectResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateObjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateObjectResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5431,6 +6546,67 @@ func (c *ClientWithResponses) GetListObjectsWithResponse(ctx context.Context, sp
 		return nil, err
 	}
 	return ParseGetListObjectsResponse(rsp)
+}
+
+// ListObjectsWithResponse request returning *ListObjectsResponse
+func (c *ClientWithResponses) ListObjectsWithResponse(ctx context.Context, spaceId string, params *ListObjectsParams, reqEditors ...RequestEditorFn) (*ListObjectsResponse, error) {
+	rsp, err := c.ListObjects(ctx, spaceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListObjectsResponse(rsp)
+}
+
+// CreateObjectWithBodyWithResponse request with arbitrary body returning *CreateObjectResponse
+func (c *ClientWithResponses) CreateObjectWithBodyWithResponse(ctx context.Context, spaceId string, params *CreateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateObjectResponse, error) {
+	rsp, err := c.CreateObjectWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateObjectResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateObjectWithResponse(ctx context.Context, spaceId string, params *CreateObjectParams, body CreateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateObjectResponse, error) {
+	rsp, err := c.CreateObject(ctx, spaceId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateObjectResponse(rsp)
+}
+
+// DeleteObjectWithResponse request returning *DeleteObjectResponse
+func (c *ClientWithResponses) DeleteObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *DeleteObjectParams, reqEditors ...RequestEditorFn) (*DeleteObjectResponse, error) {
+	rsp, err := c.DeleteObject(ctx, spaceId, objectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteObjectResponse(rsp)
+}
+
+// GetObjectWithResponse request returning *GetObjectResponse
+func (c *ClientWithResponses) GetObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *GetObjectParams, reqEditors ...RequestEditorFn) (*GetObjectResponse, error) {
+	rsp, err := c.GetObject(ctx, spaceId, objectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetObjectResponse(rsp)
+}
+
+// UpdateObjectWithBodyWithResponse request with arbitrary body returning *UpdateObjectResponse
+func (c *ClientWithResponses) UpdateObjectWithBodyWithResponse(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateObjectResponse, error) {
+	rsp, err := c.UpdateObjectWithBody(ctx, spaceId, objectId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateObjectResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateObjectWithResponse(ctx context.Context, spaceId string, objectId string, params *UpdateObjectParams, body UpdateObjectJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateObjectResponse, error) {
+	rsp, err := c.UpdateObject(ctx, spaceId, objectId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateObjectResponse(rsp)
 }
 
 // ListPropertiesWithResponse request returning *ListPropertiesResponse
@@ -6038,6 +7214,290 @@ func ParseGetListObjectsResponse(rsp *http.Response) (*GetListObjectsResponse, e
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListObjectsResponse parses an HTTP response from a ListObjectsWithResponse call
+func ParseListObjectsResponse(rsp *http.Response) (*ListObjectsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListObjectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseObject
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateObjectResponse parses an HTTP response from a CreateObjectWithResponse call
+func ParseCreateObjectResponse(rsp *http.Response) (*CreateObjectResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateObjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ObjectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteObjectResponse parses an HTTP response from a DeleteObjectWithResponse call
+func ParseDeleteObjectResponse(rsp *http.Response) (*DeleteObjectResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteObjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ObjectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetObjectResponse parses an HTTP response from a GetObjectWithResponse call
+func ParseGetObjectResponse(rsp *http.Response) (*GetObjectResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetObjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ObjectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateObjectResponse parses an HTTP response from a UpdateObjectWithResponse call
+func ParseUpdateObjectResponse(rsp *http.Response) (*UpdateObjectResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateObjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ObjectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ServerError

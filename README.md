@@ -15,10 +15,11 @@ management (upload, download and delete via `.../files` and
 `.../files/{file_id}`), **lists** (collections/sets): inspect their views and
 objects, and add/remove objects via `.../lists/{list_id}/...`, **properties**
 management (list, get, create, update and delete via `.../properties` and
-`.../properties/{property_id}`), and **tags** (the selectable values of a
+`.../properties/{property_id}`), **tags** (the selectable values of a
 select/multi-select property): list, get, create, update and delete via
-`.../properties/{property_id}/tags/...`. The architecture
-is set up so more commands (spaces, objects, …) can be added incrementally.
+`.../properties/{property_id}/tags/...`, and **objects** (list, get, create,
+update, delete via `.../objects` and `.../objects/{object_id}`). The architecture
+is set up so more commands (spaces, …) can be added incrementally.
 
 ## Install
 
