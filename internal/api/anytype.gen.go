@@ -588,6 +588,33 @@ type CheckboxPropertyValue struct {
 // Color The color of the icon
 type Color string
 
+// CreateApiKeyRequest defines model for CreateApiKeyRequest.
+type CreateApiKeyRequest struct {
+	// ChallengeId The challenge id associated with the previously displayed code
+	ChallengeId *string `json:"challenge_id,omitempty"`
+
+	// Code The 4-digit code retrieved from Anytype Desktop app
+	Code *string `json:"code,omitempty"`
+}
+
+// CreateApiKeyResponse defines model for CreateApiKeyResponse.
+type CreateApiKeyResponse struct {
+	// ApiKey The api key used to authenticate requests
+	ApiKey *string `json:"api_key,omitempty"`
+}
+
+// CreateChallengeRequest defines model for CreateChallengeRequest.
+type CreateChallengeRequest struct {
+	// AppName The name of the app that is requesting the challenge
+	AppName *string `json:"app_name,omitempty"`
+}
+
+// CreateChallengeResponse defines model for CreateChallengeResponse.
+type CreateChallengeResponse struct {
+	// ChallengeId The challenge id associated with the displayed code and needed to solve the challenge for api_key
+	ChallengeId *string `json:"challenge_id,omitempty"`
+}
+
 // CreateObjectRequest defines model for CreateObjectRequest.
 type CreateObjectRequest struct {
 	// Body The body of the object
@@ -1671,6 +1698,18 @@ type View struct {
 // ViewLayout The layout of the view
 type ViewLayout string
 
+// CreateAuthApiKeyParams defines parameters for CreateAuthApiKey.
+type CreateAuthApiKeyParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// CreateAuthChallengeParams defines parameters for CreateAuthChallenge.
+type CreateAuthChallengeParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
 // SearchGlobalParams defines parameters for SearchGlobal.
 type SearchGlobalParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1934,6 +1973,12 @@ type UpdateTypeParams struct {
 	// AnytypeVersion The version of the API to use
 	AnytypeVersion string `json:"Anytype-Version"`
 }
+
+// CreateAuthApiKeyJSONRequestBody defines body for CreateAuthApiKey for application/json ContentType.
+type CreateAuthApiKeyJSONRequestBody = CreateApiKeyRequest
+
+// CreateAuthChallengeJSONRequestBody defines body for CreateAuthChallenge for application/json ContentType.
+type CreateAuthChallengeJSONRequestBody = CreateChallengeRequest
 
 // SearchGlobalJSONRequestBody defines body for SearchGlobal for application/json ContentType.
 type SearchGlobalJSONRequestBody = SearchRequest
@@ -3052,6 +3097,16 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// CreateAuthApiKeyWithBody request with any body
+	CreateAuthApiKeyWithBody(ctx context.Context, params *CreateAuthApiKeyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateAuthApiKey(ctx context.Context, params *CreateAuthApiKeyParams, body CreateAuthApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAuthChallengeWithBody request with any body
+	CreateAuthChallengeWithBody(ctx context.Context, params *CreateAuthChallengeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateAuthChallenge(ctx context.Context, params *CreateAuthChallengeParams, body CreateAuthChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchGlobalWithBody request with any body
 	SearchGlobalWithBody(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3176,6 +3231,54 @@ type ClientInterface interface {
 	UpdateTypeWithBody(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateType(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) CreateAuthApiKeyWithBody(ctx context.Context, params *CreateAuthApiKeyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAuthApiKeyRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateAuthApiKey(ctx context.Context, params *CreateAuthApiKeyParams, body CreateAuthApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAuthApiKeyRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateAuthChallengeWithBody(ctx context.Context, params *CreateAuthChallengeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAuthChallengeRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateAuthChallenge(ctx context.Context, params *CreateAuthChallengeParams, body CreateAuthChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAuthChallengeRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) SearchGlobalWithBody(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3728,6 +3831,112 @@ func (c *Client) UpdateType(ctx context.Context, spaceId string, typeId string, 
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewCreateAuthApiKeyRequest calls the generic CreateAuthApiKey builder with application/json body
+func NewCreateAuthApiKeyRequest(server string, params *CreateAuthApiKeyParams, body CreateAuthApiKeyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateAuthApiKeyRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateAuthApiKeyRequestWithBody generates requests for CreateAuthApiKey with any type of body
+func NewCreateAuthApiKeyRequestWithBody(server string, params *CreateAuthApiKeyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/api_keys")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateAuthChallengeRequest calls the generic CreateAuthChallenge builder with application/json body
+func NewCreateAuthChallengeRequest(server string, params *CreateAuthChallengeParams, body CreateAuthChallengeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateAuthChallengeRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateAuthChallengeRequestWithBody generates requests for CreateAuthChallenge with any type of body
+func NewCreateAuthChallengeRequestWithBody(server string, params *CreateAuthChallengeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/challenges")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
 }
 
 // NewSearchGlobalRequest calls the generic SearchGlobal builder with application/json body
@@ -6019,6 +6228,16 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// CreateAuthApiKeyWithBodyWithResponse request with any body
+	CreateAuthApiKeyWithBodyWithResponse(ctx context.Context, params *CreateAuthApiKeyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAuthApiKeyResponse, error)
+
+	CreateAuthApiKeyWithResponse(ctx context.Context, params *CreateAuthApiKeyParams, body CreateAuthApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAuthApiKeyResponse, error)
+
+	// CreateAuthChallengeWithBodyWithResponse request with any body
+	CreateAuthChallengeWithBodyWithResponse(ctx context.Context, params *CreateAuthChallengeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAuthChallengeResponse, error)
+
+	CreateAuthChallengeWithResponse(ctx context.Context, params *CreateAuthChallengeParams, body CreateAuthChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAuthChallengeResponse, error)
+
 	// SearchGlobalWithBodyWithResponse request with any body
 	SearchGlobalWithBodyWithResponse(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchGlobalResponse, error)
 
@@ -6143,6 +6362,54 @@ type ClientWithResponsesInterface interface {
 	UpdateTypeWithBodyWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error)
 
 	UpdateTypeWithResponse(ctx context.Context, spaceId string, typeId string, params *UpdateTypeParams, body UpdateTypeJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTypeResponse, error)
+}
+
+type CreateAuthApiKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *CreateApiKeyResponse
+	JSON400      *ValidationError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateAuthApiKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateAuthApiKeyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateAuthChallengeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *CreateChallengeResponse
+	JSON400      *ValidationError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateAuthChallengeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateAuthChallengeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type SearchGlobalResponse struct {
@@ -7009,6 +7276,40 @@ func (r UpdateTypeResponse) StatusCode() int {
 	return 0
 }
 
+// CreateAuthApiKeyWithBodyWithResponse request with arbitrary body returning *CreateAuthApiKeyResponse
+func (c *ClientWithResponses) CreateAuthApiKeyWithBodyWithResponse(ctx context.Context, params *CreateAuthApiKeyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAuthApiKeyResponse, error) {
+	rsp, err := c.CreateAuthApiKeyWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAuthApiKeyResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateAuthApiKeyWithResponse(ctx context.Context, params *CreateAuthApiKeyParams, body CreateAuthApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAuthApiKeyResponse, error) {
+	rsp, err := c.CreateAuthApiKey(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAuthApiKeyResponse(rsp)
+}
+
+// CreateAuthChallengeWithBodyWithResponse request with arbitrary body returning *CreateAuthChallengeResponse
+func (c *ClientWithResponses) CreateAuthChallengeWithBodyWithResponse(ctx context.Context, params *CreateAuthChallengeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAuthChallengeResponse, error) {
+	rsp, err := c.CreateAuthChallengeWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAuthChallengeResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateAuthChallengeWithResponse(ctx context.Context, params *CreateAuthChallengeParams, body CreateAuthChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAuthChallengeResponse, error) {
+	rsp, err := c.CreateAuthChallenge(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAuthChallengeResponse(rsp)
+}
+
 // SearchGlobalWithBodyWithResponse request with arbitrary body returning *SearchGlobalResponse
 func (c *ClientWithResponses) SearchGlobalWithBodyWithResponse(ctx context.Context, params *SearchGlobalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchGlobalResponse, error) {
 	rsp, err := c.SearchGlobalWithBody(ctx, params, contentType, body, reqEditors...)
@@ -7408,6 +7709,86 @@ func (c *ClientWithResponses) UpdateTypeWithResponse(ctx context.Context, spaceI
 		return nil, err
 	}
 	return ParseUpdateTypeResponse(rsp)
+}
+
+// ParseCreateAuthApiKeyResponse parses an HTTP response from a CreateAuthApiKeyWithResponse call
+func ParseCreateAuthApiKeyResponse(rsp *http.Response) (*CreateAuthApiKeyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateAuthApiKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CreateApiKeyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateAuthChallengeResponse parses an HTTP response from a CreateAuthChallengeWithResponse call
+func ParseCreateAuthChallengeResponse(rsp *http.Response) (*CreateAuthChallengeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateAuthChallengeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CreateChallengeResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseSearchGlobalResponse parses an HTTP response from a SearchGlobalWithResponse call

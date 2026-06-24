@@ -2800,7 +2800,7 @@ paths:
         solution is correct and, if it is, returns an `api_key`. This endpoint is
         central to the authentication process, as it validates the user's identity
         and issues a key that can be used for further interactions with the API.
-      operationId: create_api_key
+      operationId: create_auth_api_key
       parameters:
       - description: The version of the API to use
         in: header
