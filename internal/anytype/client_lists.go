@@ -18,10 +18,15 @@ type ListViewsOptions struct {
 // ListViews returns the views defined for a list (query or collection) within
 // the given space together with pagination metadata.
 func (c *Client) ListViews(ctx context.Context, opts ListViewsOptions) (*api.PaginatedResponseView, error) {
-	params := &api.GetListViewsParams{
-		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	params := &api.GetListViewsParams{AnytypeVersion: APIVersion}
+	// Only send limit/offset when set: a pointer to 0 still marshals (omitempty
+	// does not drop pointers-to-zero), which would override the server defaults
+	// and could return zero items.
+	if opts.Limit > 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset > 0 {
+		params.Offset = &opts.Offset
 	}
 
 	resp, err := c.api.GetListViewsWithResponse(ctx, opts.SpaceID, opts.ListID, params)
@@ -55,10 +60,15 @@ type ListObjectsOptions struct {
 // ListObjects returns the objects in a list, filtered and sorted according to
 // the given view, together with pagination metadata.
 func (c *Client) ListObjects(ctx context.Context, opts ListObjectsOptions) (*api.PaginatedResponseObject, error) {
-	params := &api.GetListObjectsParams{
-		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	params := &api.GetListObjectsParams{AnytypeVersion: APIVersion}
+	// Only send limit/offset when set: a pointer to 0 still marshals (omitempty
+	// does not drop pointers-to-zero), which would override the server defaults
+	// and could return zero items.
+	if opts.Limit > 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset > 0 {
+		params.Offset = &opts.Offset
 	}
 
 	resp, err := c.api.GetListObjectsWithResponse(ctx, opts.SpaceID, opts.ListID, opts.ViewID, params)
