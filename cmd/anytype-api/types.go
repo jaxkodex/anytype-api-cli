@@ -240,7 +240,24 @@ convenience flags below. Flags take precedence over fields in the payload.`,
 		Example: `  # Rename a type
   anytype-api types update bafyre... --space bafyre... --name "New name"`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := newClient()
+			if err != nil {
+				return err
+			}
+
+			// UpdateTypeRequest.Icon is serialized without omitempty, so a nil
+			// icon would clear the type's icon on every update. Seed the body
+			// with the existing icon so partial updates preserve it; a --file or
+			// --icon that supplies an icon still overrides it below.
+			existing, err := client.GetType(cmd.Context(), spaceID, args[0])
+			if err != nil {
+				return err
+			}
+
 			var body api.UpdateTypeRequest
+			if existing.Type != nil {
+				body.Icon = existing.Type.Icon
+			}
 			if file != "" {
 				if err := readPayload(cmd, file, &body); err != nil {
 					return err
@@ -266,11 +283,6 @@ convenience flags below. Flags take precedence over fields in the payload.`,
 					return err
 				}
 				body.Icon = ic
-			}
-
-			client, err := newClient()
-			if err != nil {
-				return err
 			}
 
 			result, err := client.UpdateType(cmd.Context(), spaceID, args[0], body)
