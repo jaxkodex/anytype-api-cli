@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"mime"
 	"os"
 	"path/filepath"
@@ -109,10 +110,11 @@ extension inferred from the response media type. Override the destination with
 				return err
 			}
 
-			data, contentType, err := client.DownloadFile(cmd.Context(), spaceID, fileID)
+			body, contentType, err := client.DownloadFile(cmd.Context(), spaceID, fileID)
 			if err != nil {
 				return err
 			}
+			defer body.Close()
 
 			// Decide where the bytes go. An explicit --output wins; "-" means
 			// stdout. With no --output, stream to stdout when it is not a TTY
@@ -123,17 +125,24 @@ extension inferred from the response media type. Override the destination with
 			}
 
 			if dest == "-" {
-				_, err := cmd.OutOrStdout().Write(data)
+				_, err := io.Copy(cmd.OutOrStdout(), body)
 				return err
 			}
 
 			if dest == "" {
 				dest = fileID + extensionFor(contentType)
 			}
-			if err := os.WriteFile(dest, data, 0o644); err != nil {
+			out, err := os.Create(dest)
+			if err != nil {
+				return fmt.Errorf("creating file: %w", err)
+			}
+			defer out.Close()
+
+			written, err := io.Copy(out, body)
+			if err != nil {
 				return fmt.Errorf("writing file: %w", err)
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "Wrote %d bytes to %s\n", len(data), dest)
+			fmt.Fprintf(cmd.OutOrStdout(), "Wrote %d bytes to %s\n", written, dest)
 			return nil
 		},
 	}

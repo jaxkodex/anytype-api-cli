@@ -4,7 +4,6 @@
 package anytype
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -267,20 +266,31 @@ func (c *Client) DeleteType(ctx context.Context, spaceID, typeID string) (*api.T
 func (c *Client) UploadFile(ctx context.Context, spaceID, filename string, r io.Reader) (*api.FileUploadResponse, error) {
 	params := &api.UploadFileParams{AnytypeVersion: APIVersion}
 
-	var body bytes.Buffer
-	writer := multipart.NewWriter(&body)
-	part, err := writer.CreateFormFile("file", filename)
-	if err != nil {
-		return nil, fmt.Errorf("building multipart body: %w", err)
-	}
-	if _, err := io.Copy(part, r); err != nil {
-		return nil, fmt.Errorf("reading file contents: %w", err)
-	}
-	if err := writer.Close(); err != nil {
-		return nil, fmt.Errorf("finalizing multipart body: %w", err)
-	}
+	// Stream the file into the request body via an io.Pipe so the whole file is
+	// never buffered in memory: a goroutine writes the multipart form data while
+	// the HTTP client reads from the other end of the pipe.
+	pr, pw := io.Pipe()
+	writer := multipart.NewWriter(pw)
 
-	resp, err := c.api.UploadFileWithBodyWithResponse(ctx, spaceID, params, writer.FormDataContentType(), &body)
+	go func() {
+		var err error
+		defer func() {
+			if err != nil {
+				pw.CloseWithError(err)
+			} else {
+				pw.Close()
+			}
+		}()
+		defer writer.Close()
+
+		part, err := writer.CreateFormFile("file", filename)
+		if err != nil {
+			return
+		}
+		_, err = io.Copy(part, r)
+	}()
+
+	resp, err := c.api.UploadFileWithBodyWithResponse(ctx, spaceID, params, writer.FormDataContentType(), pr)
 	if err != nil {
 		return nil, fmt.Errorf("upload file request failed: %w", err)
 	}
@@ -306,34 +316,25 @@ func (c *Client) UploadFile(ctx context.Context, spaceID, filename string, r io.
 }
 
 // DownloadFile streams the raw bytes of the file identified by fileID within the
-// given space. It returns the contents together with the response Content-Type,
-// which callers may use to pick a filename or extension.
-func (c *Client) DownloadFile(ctx context.Context, spaceID, fileID string) ([]byte, string, error) {
+// given space. It returns the response body as an io.ReadCloser together with the
+// Content-Type, which callers may use to pick a filename or extension. The caller
+// is responsible for closing the returned reader. Streaming the body avoids
+// buffering the entire file in memory.
+func (c *Client) DownloadFile(ctx context.Context, spaceID, fileID string) (io.ReadCloser, string, error) {
 	params := &api.DownloadFileParams{AnytypeVersion: APIVersion}
 
-	resp, err := c.api.DownloadFileWithResponse(ctx, spaceID, fileID, params)
+	resp, err := c.api.DownloadFile(ctx, spaceID, fileID, params)
 	if err != nil {
 		return nil, "", fmt.Errorf("download file request failed: %w", err)
 	}
 
-	switch {
-	case resp.JSON400 != nil:
-		return nil, "", fmt.Errorf("invalid request: %s", derefMessage(resp.JSON400.Message))
-	case resp.JSON401 != nil:
-		return nil, "", fmt.Errorf("unauthorized: check that %s holds a valid API token", EnvAPIKey)
-	case resp.JSON404 != nil:
-		return nil, "", fmt.Errorf("file not found: %s", derefMessage(resp.JSON404.Message))
-	case resp.JSON500 != nil:
-		return nil, "", fmt.Errorf("server error: %s", derefMessage(resp.JSON500.Message))
-	case resp.StatusCode() == http.StatusOK:
-		contentType := ""
-		if resp.HTTPResponse != nil {
-			contentType = resp.HTTPResponse.Header.Get("Content-Type")
-		}
-		return resp.Body, contentType, nil
-	default:
-		return nil, "", fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode(), string(resp.Body))
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+		return nil, "", fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode, string(body))
 	}
+
+	return resp.Body, resp.Header.Get("Content-Type"), nil
 }
 
 // DeleteFile removes the file identified by fileID within the given space. By
