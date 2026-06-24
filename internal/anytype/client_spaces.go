@@ -19,8 +19,12 @@ type ListSpacesOptions struct {
 func (c *Client) ListSpaces(ctx context.Context, opts ListSpacesOptions) (*api.PaginatedResponseSpace, error) {
 	params := &api.ListSpacesParams{
 		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	}
+	if opts.Limit > 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset > 0 {
+		params.Offset = &opts.Offset
 	}
 
 	resp, err := c.api.ListSpacesWithResponse(ctx, params)
