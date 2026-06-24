@@ -31,7 +31,15 @@ func (c *Client) UploadFile(ctx context.Context, spaceID, filename string, r io.
 				pw.Close()
 			}
 		}()
-		defer writer.Close()
+		// writer.Close() writes the terminating multipart boundary; a failure
+		// there would silently truncate the upload, so capture it. Deferred
+		// functions run LIFO, so this closes the writer (setting err if it
+		// fails) before the closure above propagates err to the pipe.
+		defer func() {
+			if cerr := writer.Close(); cerr != nil && err == nil {
+				err = cerr
+			}
+		}()
 
 		part, err := writer.CreateFormFile("file", filename)
 		if err != nil {
