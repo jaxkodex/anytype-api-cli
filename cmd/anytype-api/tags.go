@@ -359,7 +359,7 @@ func printTagsTable(cmd *cobra.Command, result *api.PaginatedResponseTag) error 
 		total := derefInt(p.Total)
 		fmt.Fprintf(out, "\nShowing %d of %d", shown, total)
 		if derefBool(p.HasMore) {
-			fmt.Fprintf(out, " (use --offset %d for more)", derefInt(p.Offset)+shown)
+			fmt.Fprintf(out, " (more items are available)")
 		}
 		fmt.Fprintln(out)
 	}
