@@ -9,9 +9,10 @@ in lockstep with the published contract.
 
 ## Status
 
-Implements global **search** (`POST /v1/search`), **types** inspection
-(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`), **files**
-management (upload, download and delete via `.../files` and
+Implements **spaces** management (list, get, create and update via `/v1/spaces`
+and `/v1/spaces/{space_id}`), global **search** (`POST /v1/search`), **types**
+inspection (`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`),
+**files** management (upload, download and delete via `.../files` and
 `.../files/{file_id}`), **lists** (collections/sets): inspect their views and
 objects, and add/remove objects via `.../lists/{list_id}/...`, **properties**
 management (list, get, create, update and delete via `.../properties` and
@@ -19,7 +20,7 @@ management (list, get, create, update and delete via `.../properties` and
 select/multi-select property): list, get, create, update and delete via
 `.../properties/{property_id}/tags/...`, and **objects** (list, get, create,
 update, delete via `.../objects` and `.../objects/{object_id}`). The architecture
-is set up so more commands (spaces, …) can be added incrementally.
+is set up so more commands (members, …) can be added incrementally.
 
 ## Install
 
