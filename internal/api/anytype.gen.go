@@ -568,6 +568,33 @@ type CheckboxPropertyValue struct {
 // Color The color of the icon
 type Color string
 
+// CreatePropertyRequest defines model for CreatePropertyRequest.
+type CreatePropertyRequest struct {
+	// Format The format of the property
+	Format PropertyFormat `json:"format"`
+
+	// Key The key of the property; should always be snake_case, otherwise it will be converted to snake_case
+	Key *string `json:"key,omitempty"`
+
+	// Name The name of the property
+	Name string `json:"name"`
+
+	// Tags Tags to create for select/multi_select properties
+	Tags *[]CreateTagRequest `json:"tags,omitempty"`
+}
+
+// CreateTagRequest defines model for CreateTagRequest.
+type CreateTagRequest struct {
+	// Color The color of the icon
+	Color Color `json:"color"`
+
+	// Key The optional custom key for the tag
+	Key *string `json:"key,omitempty"`
+
+	// Name The name of the tag
+	Name string `json:"name"`
+}
+
 // CreateTypeRequest defines model for CreateTypeRequest.
 type CreateTypeRequest struct {
 	// Icon The icon of the object, or null if the object has no icon
@@ -965,6 +992,15 @@ type PaginatedResponseObject struct {
 	Pagination *PaginationMeta `json:"pagination,omitempty"`
 }
 
+// PaginatedResponseProperty defines model for PaginatedResponse-Property.
+type PaginatedResponseProperty struct {
+	// Data The list of items in the current result set
+	Data *[]Property `json:"data,omitempty"`
+
+	// Pagination The pagination metadata for the response
+	Pagination *PaginationMeta `json:"pagination,omitempty"`
+}
+
 // PaginatedResponseType defines model for PaginatedResponse-Type.
 type PaginatedResponseType struct {
 	// Data The list of items in the current result set
@@ -1062,6 +1098,12 @@ type PropertyLink struct {
 
 	// Name The name of the property
 	Name string `json:"name"`
+}
+
+// PropertyResponse defines model for PropertyResponse.
+type PropertyResponse struct {
+	// Property The property
+	Property *Property `json:"property,omitempty"`
 }
 
 // PropertyWithValue defines model for PropertyWithValue.
@@ -1267,6 +1309,15 @@ type UnauthorizedError struct {
 	Status  *int    `json:"status,omitempty"`
 }
 
+// UpdatePropertyRequest defines model for UpdatePropertyRequest.
+type UpdatePropertyRequest struct {
+	// Key The key to set for the property; ; should always be snake_case, otherwise it will be converted to snake_case
+	Key *string `json:"key,omitempty"`
+
+	// Name The name to set for the property
+	Name string `json:"name"`
+}
+
 // UpdateTypeRequest defines model for UpdateTypeRequest.
 type UpdateTypeRequest struct {
 	// Icon The icon of the object, or null if the object has no icon
@@ -1428,6 +1479,42 @@ type GetListObjectsParams struct {
 	AnytypeVersion string `json:"Anytype-Version"`
 }
 
+// ListPropertiesParams defines parameters for ListProperties.
+type ListPropertiesParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// CreatePropertyParams defines parameters for CreateProperty.
+type CreatePropertyParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// DeletePropertyParams defines parameters for DeleteProperty.
+type DeletePropertyParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetPropertyParams defines parameters for GetProperty.
+type GetPropertyParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// UpdatePropertyParams defines parameters for UpdateProperty.
+type UpdatePropertyParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
 // SearchSpaceParams defines parameters for SearchSpace.
 type SearchSpaceParams struct {
 	// Offset The number of items to skip before starting to collect the result set
@@ -1484,6 +1571,12 @@ type UploadFileMultipartRequestBody UploadFileMultipartBody
 
 // AddListObjectsJSONRequestBody defines body for AddListObjects for application/json ContentType.
 type AddListObjectsJSONRequestBody = AddObjectsToListRequest
+
+// CreatePropertyJSONRequestBody defines body for CreateProperty for application/json ContentType.
+type CreatePropertyJSONRequestBody = CreatePropertyRequest
+
+// UpdatePropertyJSONRequestBody defines body for UpdateProperty for application/json ContentType.
+type UpdatePropertyJSONRequestBody = UpdatePropertyRequest
 
 // SearchSpaceJSONRequestBody defines body for SearchSpace for application/json ContentType.
 type SearchSpaceJSONRequestBody = SearchRequest
@@ -2301,6 +2394,25 @@ type ClientInterface interface {
 	// GetListObjects request
 	GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListProperties request
+	ListProperties(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreatePropertyWithBody request with any body
+	CreatePropertyWithBody(ctx context.Context, spaceId string, params *CreatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateProperty(ctx context.Context, spaceId string, params *CreatePropertyParams, body CreatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteProperty request
+	DeleteProperty(ctx context.Context, spaceId string, propertyId string, params *DeletePropertyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProperty request
+	GetProperty(ctx context.Context, spaceId string, propertyId string, params *GetPropertyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdatePropertyWithBody request with any body
+	UpdatePropertyWithBody(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateProperty(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, body UpdatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchSpaceWithBody request with any body
 	SearchSpaceWithBody(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2436,6 +2548,90 @@ func (c *Client) GetListViews(ctx context.Context, spaceId string, listId string
 
 func (c *Client) GetListObjects(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetListObjectsRequest(c.Server, spaceId, listId, viewId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListProperties(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPropertiesRequest(c.Server, spaceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreatePropertyWithBody(ctx context.Context, spaceId string, params *CreatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePropertyRequestWithBody(c.Server, spaceId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateProperty(ctx context.Context, spaceId string, params *CreatePropertyParams, body CreatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePropertyRequest(c.Server, spaceId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteProperty(ctx context.Context, spaceId string, propertyId string, params *DeletePropertyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeletePropertyRequest(c.Server, spaceId, propertyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetProperty(ctx context.Context, spaceId string, propertyId string, params *GetPropertyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPropertyRequest(c.Server, spaceId, propertyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdatePropertyWithBody(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdatePropertyRequestWithBody(c.Server, spaceId, propertyId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateProperty(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, body UpdatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdatePropertyRequest(c.Server, spaceId, propertyId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3165,6 +3361,326 @@ func NewGetListObjectsRequest(server string, spaceId string, listId string, view
 	return req, nil
 }
 
+// NewListPropertiesRequest generates requests for ListProperties
+func NewListPropertiesRequest(server string, spaceId string, params *ListPropertiesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/properties", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreatePropertyRequest calls the generic CreateProperty builder with application/json body
+func NewCreatePropertyRequest(server string, spaceId string, params *CreatePropertyParams, body CreatePropertyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreatePropertyRequestWithBody(server, spaceId, params, "application/json", bodyReader)
+}
+
+// NewCreatePropertyRequestWithBody generates requests for CreateProperty with any type of body
+func NewCreatePropertyRequestWithBody(server string, spaceId string, params *CreatePropertyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/properties", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeletePropertyRequest generates requests for DeleteProperty
+func NewDeletePropertyRequest(server string, spaceId string, propertyId string, params *DeletePropertyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "property_id", runtime.ParamLocationPath, propertyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/properties/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetPropertyRequest generates requests for GetProperty
+func NewGetPropertyRequest(server string, spaceId string, propertyId string, params *GetPropertyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "property_id", runtime.ParamLocationPath, propertyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/properties/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdatePropertyRequest calls the generic UpdateProperty builder with application/json body
+func NewUpdatePropertyRequest(server string, spaceId string, propertyId string, params *UpdatePropertyParams, body UpdatePropertyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdatePropertyRequestWithBody(server, spaceId, propertyId, params, "application/json", bodyReader)
+}
+
+// NewUpdatePropertyRequestWithBody generates requests for UpdateProperty with any type of body
+func NewUpdatePropertyRequestWithBody(server string, spaceId string, propertyId string, params *UpdatePropertyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "property_id", runtime.ParamLocationPath, propertyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s/properties/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewSearchSpaceRequest calls the generic SearchSpace builder with application/json body
 func NewSearchSpaceRequest(server string, spaceId string, params *SearchSpaceParams, body SearchSpaceJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -3654,6 +4170,25 @@ type ClientWithResponsesInterface interface {
 	// GetListObjectsWithResponse request
 	GetListObjectsWithResponse(ctx context.Context, spaceId string, listId string, viewId string, params *GetListObjectsParams, reqEditors ...RequestEditorFn) (*GetListObjectsResponse, error)
 
+	// ListPropertiesWithResponse request
+	ListPropertiesWithResponse(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*ListPropertiesResponse, error)
+
+	// CreatePropertyWithBodyWithResponse request with any body
+	CreatePropertyWithBodyWithResponse(ctx context.Context, spaceId string, params *CreatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePropertyResponse, error)
+
+	CreatePropertyWithResponse(ctx context.Context, spaceId string, params *CreatePropertyParams, body CreatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePropertyResponse, error)
+
+	// DeletePropertyWithResponse request
+	DeletePropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *DeletePropertyParams, reqEditors ...RequestEditorFn) (*DeletePropertyResponse, error)
+
+	// GetPropertyWithResponse request
+	GetPropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *GetPropertyParams, reqEditors ...RequestEditorFn) (*GetPropertyResponse, error)
+
+	// UpdatePropertyWithBodyWithResponse request with any body
+	UpdatePropertyWithBodyWithResponse(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePropertyResponse, error)
+
+	UpdatePropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, body UpdatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePropertyResponse, error)
+
 	// SearchSpaceWithBodyWithResponse request with any body
 	SearchSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *SearchSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSpaceResponse, error)
 
@@ -3879,6 +4414,139 @@ func (r GetListObjectsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetListObjectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListPropertiesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseProperty
+	JSON401      *UnauthorizedError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPropertiesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPropertiesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreatePropertyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *PropertyResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreatePropertyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreatePropertyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeletePropertyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PropertyResponse
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeletePropertyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeletePropertyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetPropertyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PropertyResponse
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetPropertyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetPropertyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdatePropertyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PropertyResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON410      *GoneError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdatePropertyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdatePropertyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4127,6 +4795,67 @@ func (c *ClientWithResponses) GetListObjectsWithResponse(ctx context.Context, sp
 		return nil, err
 	}
 	return ParseGetListObjectsResponse(rsp)
+}
+
+// ListPropertiesWithResponse request returning *ListPropertiesResponse
+func (c *ClientWithResponses) ListPropertiesWithResponse(ctx context.Context, spaceId string, params *ListPropertiesParams, reqEditors ...RequestEditorFn) (*ListPropertiesResponse, error) {
+	rsp, err := c.ListProperties(ctx, spaceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPropertiesResponse(rsp)
+}
+
+// CreatePropertyWithBodyWithResponse request with arbitrary body returning *CreatePropertyResponse
+func (c *ClientWithResponses) CreatePropertyWithBodyWithResponse(ctx context.Context, spaceId string, params *CreatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePropertyResponse, error) {
+	rsp, err := c.CreatePropertyWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreatePropertyResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreatePropertyWithResponse(ctx context.Context, spaceId string, params *CreatePropertyParams, body CreatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePropertyResponse, error) {
+	rsp, err := c.CreateProperty(ctx, spaceId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreatePropertyResponse(rsp)
+}
+
+// DeletePropertyWithResponse request returning *DeletePropertyResponse
+func (c *ClientWithResponses) DeletePropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *DeletePropertyParams, reqEditors ...RequestEditorFn) (*DeletePropertyResponse, error) {
+	rsp, err := c.DeleteProperty(ctx, spaceId, propertyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeletePropertyResponse(rsp)
+}
+
+// GetPropertyWithResponse request returning *GetPropertyResponse
+func (c *ClientWithResponses) GetPropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *GetPropertyParams, reqEditors ...RequestEditorFn) (*GetPropertyResponse, error) {
+	rsp, err := c.GetProperty(ctx, spaceId, propertyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetPropertyResponse(rsp)
+}
+
+// UpdatePropertyWithBodyWithResponse request with arbitrary body returning *UpdatePropertyResponse
+func (c *ClientWithResponses) UpdatePropertyWithBodyWithResponse(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePropertyResponse, error) {
+	rsp, err := c.UpdatePropertyWithBody(ctx, spaceId, propertyId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdatePropertyResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdatePropertyWithResponse(ctx context.Context, spaceId string, propertyId string, params *UpdatePropertyParams, body UpdatePropertyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePropertyResponse, error) {
+	rsp, err := c.UpdateProperty(ctx, spaceId, propertyId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdatePropertyResponse(rsp)
 }
 
 // SearchSpaceWithBodyWithResponse request with arbitrary body returning *SearchSpaceResponse
@@ -4612,6 +5341,297 @@ func ParseGetListObjectsResponse(rsp *http.Response) (*GetListObjectsResponse, e
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListPropertiesResponse parses an HTTP response from a ListPropertiesWithResponse call
+func ParseListPropertiesResponse(rsp *http.Response) (*ListPropertiesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPropertiesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseProperty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreatePropertyResponse parses an HTTP response from a CreatePropertyWithResponse call
+func ParseCreatePropertyResponse(rsp *http.Response) (*CreatePropertyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreatePropertyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PropertyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeletePropertyResponse parses an HTTP response from a DeletePropertyWithResponse call
+func ParseDeletePropertyResponse(rsp *http.Response) (*DeletePropertyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeletePropertyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PropertyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetPropertyResponse parses an HTTP response from a GetPropertyWithResponse call
+func ParseGetPropertyResponse(rsp *http.Response) (*GetPropertyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetPropertyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PropertyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdatePropertyResponse parses an HTTP response from a UpdatePropertyWithResponse call
+func ParseUpdatePropertyResponse(rsp *http.Response) (*UpdatePropertyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdatePropertyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PropertyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest GoneError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ServerError

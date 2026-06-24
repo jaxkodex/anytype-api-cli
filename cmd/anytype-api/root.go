@@ -26,6 +26,7 @@ by default); override it with ANYTYPE_API_URL.`,
 	cmd.AddCommand(newTypesCmd())
 	cmd.AddCommand(newFilesCmd())
 	cmd.AddCommand(newListsCmd())
+	cmd.AddCommand(newPropertiesCmd())
 
 	return cmd
 }
