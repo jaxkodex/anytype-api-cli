@@ -6,3 +6,8 @@
 # Go
 *.test
 *.out
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
