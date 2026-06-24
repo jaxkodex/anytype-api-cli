@@ -4,8 +4,11 @@
 package anytype
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 
@@ -255,6 +258,108 @@ func (c *Client) DeleteType(ctx context.Context, spaceID, typeID string) (*api.T
 		return nil, fmt.Errorf("server error: %s", derefMessage(resp.JSON500.Message))
 	default:
 		return nil, fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode(), string(resp.Body))
+	}
+}
+
+// UploadFile uploads the bytes from r as a multipart/form-data "file" field to
+// the given space and returns the created file object. The filename is sent in
+// the multipart part so the server can preserve the original name.
+func (c *Client) UploadFile(ctx context.Context, spaceID, filename string, r io.Reader) (*api.FileUploadResponse, error) {
+	params := &api.UploadFileParams{AnytypeVersion: APIVersion}
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("file", filename)
+	if err != nil {
+		return nil, fmt.Errorf("building multipart body: %w", err)
+	}
+	if _, err := io.Copy(part, r); err != nil {
+		return nil, fmt.Errorf("reading file contents: %w", err)
+	}
+	if err := writer.Close(); err != nil {
+		return nil, fmt.Errorf("finalizing multipart body: %w", err)
+	}
+
+	resp, err := c.api.UploadFileWithBodyWithResponse(ctx, spaceID, params, writer.FormDataContentType(), &body)
+	if err != nil {
+		return nil, fmt.Errorf("upload file request failed: %w", err)
+	}
+
+	switch {
+	case resp.JSON200 != nil:
+		return resp.JSON200, nil
+	case resp.JSON400 != nil:
+		return nil, fmt.Errorf("invalid request: %s", derefMessage(resp.JSON400.Message))
+	case resp.JSON401 != nil:
+		return nil, fmt.Errorf("unauthorized: check that %s holds a valid API token", EnvAPIKey)
+	case resp.JSON403 != nil:
+		return nil, fmt.Errorf("forbidden: %s", derefMessage(resp.JSON403.Message))
+	case resp.JSON404 != nil:
+		return nil, fmt.Errorf("space not found: %s", derefMessage(resp.JSON404.Message))
+	case resp.JSON410 != nil:
+		return nil, fmt.Errorf("space deleted: %s", derefMessage(resp.JSON410.Message))
+	case resp.JSON500 != nil:
+		return nil, fmt.Errorf("server error: %s", derefMessage(resp.JSON500.Message))
+	default:
+		return nil, fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode(), string(resp.Body))
+	}
+}
+
+// DownloadFile streams the raw bytes of the file identified by fileID within the
+// given space. It returns the contents together with the response Content-Type,
+// which callers may use to pick a filename or extension.
+func (c *Client) DownloadFile(ctx context.Context, spaceID, fileID string) ([]byte, string, error) {
+	params := &api.DownloadFileParams{AnytypeVersion: APIVersion}
+
+	resp, err := c.api.DownloadFileWithResponse(ctx, spaceID, fileID, params)
+	if err != nil {
+		return nil, "", fmt.Errorf("download file request failed: %w", err)
+	}
+
+	switch {
+	case resp.JSON400 != nil:
+		return nil, "", fmt.Errorf("invalid request: %s", derefMessage(resp.JSON400.Message))
+	case resp.JSON401 != nil:
+		return nil, "", fmt.Errorf("unauthorized: check that %s holds a valid API token", EnvAPIKey)
+	case resp.JSON404 != nil:
+		return nil, "", fmt.Errorf("file not found: %s", derefMessage(resp.JSON404.Message))
+	case resp.JSON500 != nil:
+		return nil, "", fmt.Errorf("server error: %s", derefMessage(resp.JSON500.Message))
+	case resp.StatusCode() == http.StatusOK:
+		contentType := ""
+		if resp.HTTPResponse != nil {
+			contentType = resp.HTTPResponse.Header.Get("Content-Type")
+		}
+		return resp.Body, contentType, nil
+	default:
+		return nil, "", fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode(), string(resp.Body))
+	}
+}
+
+// DeleteFile removes the file identified by fileID within the given space. By
+// default the file is moved to the bin; pass skipBin to permanently delete it.
+func (c *Client) DeleteFile(ctx context.Context, spaceID, fileID string, skipBin bool) error {
+	params := &api.DeleteFileParams{
+		AnytypeVersion: APIVersion,
+		SkipBin:        &skipBin,
+	}
+
+	resp, err := c.api.DeleteFileWithResponse(ctx, spaceID, fileID, params)
+	if err != nil {
+		return fmt.Errorf("delete file request failed: %w", err)
+	}
+
+	switch {
+	case resp.StatusCode() == http.StatusNoContent || resp.JSON204 != nil:
+		return nil
+	case resp.JSON400 != nil:
+		return fmt.Errorf("invalid request: %s", derefMessage(resp.JSON400.Message))
+	case resp.JSON401 != nil:
+		return fmt.Errorf("unauthorized: check that %s holds a valid API token", EnvAPIKey)
+	case resp.JSON500 != nil:
+		return fmt.Errorf("server error: %s", derefMessage(resp.JSON500.Message))
+	default:
+		return fmt.Errorf("unexpected response (HTTP %d): %s", resp.StatusCode(), string(resp.Body))
 	}
 }
 

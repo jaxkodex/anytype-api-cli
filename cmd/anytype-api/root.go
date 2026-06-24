@@ -24,6 +24,7 @@ by default); override it with ANYTYPE_API_URL.`,
 
 	cmd.AddCommand(newSearchCmd())
 	cmd.AddCommand(newTypesCmd())
+	cmd.AddCommand(newFilesCmd())
 
 	return cmd
 }
