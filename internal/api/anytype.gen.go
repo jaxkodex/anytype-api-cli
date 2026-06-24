@@ -496,6 +496,14 @@ const (
 	Name             SortProperty = "name"
 )
 
+// Defines values for SpaceObject.
+const (
+	AnytypeChatspace SpaceObject = "anytype.chatspace"
+	AnytypeOnetoone  SpaceObject = "anytype.onetoone"
+	AnytypeSpace     SpaceObject = "anytype.space"
+	AnytypeTechspace SpaceObject = "anytype.techspace"
+)
+
 // Defines values for TypeLayout.
 const (
 	ObjectLayoutAction      TypeLayout = "action"
@@ -614,6 +622,15 @@ type CreatePropertyRequest struct {
 
 	// Tags Tags to create for select/multi_select properties
 	Tags *[]CreateTagRequest `json:"tags,omitempty"`
+}
+
+// CreateSpaceRequest defines model for CreateSpaceRequest.
+type CreateSpaceRequest struct {
+	// Description The description of the space
+	Description *string `json:"description,omitempty"`
+
+	// Name The name of the space
+	Name string `json:"name"`
 }
 
 // CreateTagRequest defines model for CreateTagRequest.
@@ -1121,6 +1138,15 @@ type PaginatedResponseProperty struct {
 	Pagination *PaginationMeta `json:"pagination,omitempty"`
 }
 
+// PaginatedResponseSpace defines model for PaginatedResponse-Space.
+type PaginatedResponseSpace struct {
+	// Data The list of items in the current result set
+	Data *[]Space `json:"data,omitempty"`
+
+	// Pagination The pagination metadata for the response
+	Pagination *PaginationMeta `json:"pagination,omitempty"`
+}
+
 // PaginatedResponseTag defines model for PaginatedResponse-Tag.
 type PaginatedResponseTag struct {
 	// Data The list of items in the current result set
@@ -1358,6 +1384,39 @@ type SortOptions struct {
 // SortProperty The key of the property to sort the search results by
 type SortProperty string
 
+// Space The space
+type Space struct {
+	// Description The description of the space
+	Description *string `json:"description,omitempty"`
+
+	// GatewayUrl The gateway url to serve files and media
+	GatewayUrl *string `json:"gateway_url,omitempty"`
+
+	// Icon The icon of the object, or null if the object has no icon
+	Icon *Icon `json:"icon"`
+
+	// Id The id of the space
+	Id *string `json:"id,omitempty"`
+
+	// Name The name of the space
+	Name *string `json:"name,omitempty"`
+
+	// NetworkId The network id of the space
+	NetworkId *string `json:"network_id,omitempty"`
+
+	// Object The space type
+	Object *SpaceObject `json:"object,omitempty"`
+}
+
+// SpaceObject The space type
+type SpaceObject string
+
+// SpaceResponse defines model for SpaceResponse.
+type SpaceResponse struct {
+	// Space The space
+	Space *Space `json:"space,omitempty"`
+}
+
 // Tag The selected tag value of the property
 type Tag struct {
 	// Color The color of the icon
@@ -1500,6 +1559,15 @@ type UpdatePropertyRequest struct {
 	Name string `json:"name"`
 }
 
+// UpdateSpaceRequest defines model for UpdateSpaceRequest.
+type UpdateSpaceRequest struct {
+	// Description The description of the space
+	Description *string `json:"description,omitempty"`
+
+	// Name The name of the space
+	Name *string `json:"name,omitempty"`
+}
+
 // UpdateTagRequest defines model for UpdateTagRequest.
 type UpdateTagRequest struct {
 	// Color The color of the icon
@@ -1611,6 +1679,36 @@ type SearchGlobalParams struct {
 	// Limit The number of items to return
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// ListSpacesParams defines parameters for ListSpaces.
+type ListSpacesParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The number of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// CreateSpaceParams defines parameters for CreateSpace.
+type CreateSpaceParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// GetSpaceParams defines parameters for GetSpace.
+type GetSpaceParams struct {
+	// AnytypeVersion The version of the API to use
+	AnytypeVersion string `json:"Anytype-Version"`
+}
+
+// UpdateSpaceParams defines parameters for UpdateSpace.
+type UpdateSpaceParams struct {
 	// AnytypeVersion The version of the API to use
 	AnytypeVersion string `json:"Anytype-Version"`
 }
@@ -1839,6 +1937,12 @@ type UpdateTypeParams struct {
 
 // SearchGlobalJSONRequestBody defines body for SearchGlobal for application/json ContentType.
 type SearchGlobalJSONRequestBody = SearchRequest
+
+// CreateSpaceJSONRequestBody defines body for CreateSpace for application/json ContentType.
+type CreateSpaceJSONRequestBody = CreateSpaceRequest
+
+// UpdateSpaceJSONRequestBody defines body for UpdateSpace for application/json ContentType.
+type UpdateSpaceJSONRequestBody = UpdateSpaceRequest
 
 // UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data ContentType.
 type UploadFileMultipartRequestBody UploadFileMultipartBody
@@ -2953,6 +3057,22 @@ type ClientInterface interface {
 
 	SearchGlobal(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListSpaces request
+	ListSpaces(ctx context.Context, params *ListSpacesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSpaceWithBody request with any body
+	CreateSpaceWithBody(ctx context.Context, params *CreateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSpace(ctx context.Context, params *CreateSpaceParams, body CreateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSpace request
+	GetSpace(ctx context.Context, spaceId string, params *GetSpaceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSpaceWithBody request with any body
+	UpdateSpaceWithBody(ctx context.Context, spaceId string, params *UpdateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSpace(ctx context.Context, spaceId string, params *UpdateSpaceParams, body UpdateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UploadFileWithBody request with any body
 	UploadFileWithBody(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3072,6 +3192,78 @@ func (c *Client) SearchGlobalWithBody(ctx context.Context, params *SearchGlobalP
 
 func (c *Client) SearchGlobal(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSearchGlobalRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListSpaces(ctx context.Context, params *ListSpacesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSpacesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSpaceWithBody(ctx context.Context, params *CreateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSpaceRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSpace(ctx context.Context, params *CreateSpaceParams, body CreateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSpaceRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSpace(ctx context.Context, spaceId string, params *GetSpaceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSpaceRequest(c.Server, spaceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSpaceWithBody(ctx context.Context, spaceId string, params *UpdateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSpaceRequestWithBody(c.Server, spaceId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSpace(ctx context.Context, spaceId string, params *UpdateSpaceParams, body UpdateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSpaceRequest(c.Server, spaceId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3607,6 +3799,244 @@ func NewSearchGlobalRequestWithBody(server string, params *SearchGlobalParams, c
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListSpacesRequest generates requests for ListSpaces
+func NewListSpacesRequest(server string, params *ListSpacesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateSpaceRequest calls the generic CreateSpace builder with application/json body
+func NewCreateSpaceRequest(server string, params *CreateSpaceParams, body CreateSpaceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSpaceRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateSpaceRequestWithBody generates requests for CreateSpace with any type of body
+func NewCreateSpaceRequestWithBody(server string, params *CreateSpaceParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetSpaceRequest generates requests for GetSpace
+func NewGetSpaceRequest(server string, spaceId string, params *GetSpaceParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "Anytype-Version", runtime.ParamLocationHeader, params.AnytypeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Anytype-Version", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateSpaceRequest calls the generic UpdateSpace builder with application/json body
+func NewUpdateSpaceRequest(server string, spaceId string, params *UpdateSpaceParams, body UpdateSpaceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSpaceRequestWithBody(server, spaceId, params, "application/json", bodyReader)
+}
+
+// NewUpdateSpaceRequestWithBody generates requests for UpdateSpace with any type of body
+func NewUpdateSpaceRequestWithBody(server string, spaceId string, params *UpdateSpaceParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "space_id", runtime.ParamLocationPath, spaceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/spaces/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -5594,6 +6024,22 @@ type ClientWithResponsesInterface interface {
 
 	SearchGlobalWithResponse(ctx context.Context, params *SearchGlobalParams, body SearchGlobalJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchGlobalResponse, error)
 
+	// ListSpacesWithResponse request
+	ListSpacesWithResponse(ctx context.Context, params *ListSpacesParams, reqEditors ...RequestEditorFn) (*ListSpacesResponse, error)
+
+	// CreateSpaceWithBodyWithResponse request with any body
+	CreateSpaceWithBodyWithResponse(ctx context.Context, params *CreateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSpaceResponse, error)
+
+	CreateSpaceWithResponse(ctx context.Context, params *CreateSpaceParams, body CreateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSpaceResponse, error)
+
+	// GetSpaceWithResponse request
+	GetSpaceWithResponse(ctx context.Context, spaceId string, params *GetSpaceParams, reqEditors ...RequestEditorFn) (*GetSpaceResponse, error)
+
+	// UpdateSpaceWithBodyWithResponse request with any body
+	UpdateSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *UpdateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSpaceResponse, error)
+
+	UpdateSpaceWithResponse(ctx context.Context, spaceId string, params *UpdateSpaceParams, body UpdateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSpaceResponse, error)
+
 	// UploadFileWithBodyWithResponse request with any body
 	UploadFileWithBodyWithResponse(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadFileResponse, error)
 
@@ -5717,6 +6163,109 @@ func (r SearchGlobalResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SearchGlobalResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListSpacesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedResponseSpace
+	JSON401      *UnauthorizedError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSpacesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSpacesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSpaceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *SpaceResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSpaceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSpaceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSpaceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SpaceResponse
+	JSON401      *UnauthorizedError
+	JSON404      *NotFoundError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSpaceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSpaceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSpaceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SpaceResponse
+	JSON400      *ValidationError
+	JSON401      *UnauthorizedError
+	JSON403      *ForbiddenError
+	JSON404      *NotFoundError
+	JSON429      *RateLimitError
+	JSON500      *ServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSpaceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSpaceResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6477,6 +7026,58 @@ func (c *ClientWithResponses) SearchGlobalWithResponse(ctx context.Context, para
 	return ParseSearchGlobalResponse(rsp)
 }
 
+// ListSpacesWithResponse request returning *ListSpacesResponse
+func (c *ClientWithResponses) ListSpacesWithResponse(ctx context.Context, params *ListSpacesParams, reqEditors ...RequestEditorFn) (*ListSpacesResponse, error) {
+	rsp, err := c.ListSpaces(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSpacesResponse(rsp)
+}
+
+// CreateSpaceWithBodyWithResponse request with arbitrary body returning *CreateSpaceResponse
+func (c *ClientWithResponses) CreateSpaceWithBodyWithResponse(ctx context.Context, params *CreateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSpaceResponse, error) {
+	rsp, err := c.CreateSpaceWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSpaceResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSpaceWithResponse(ctx context.Context, params *CreateSpaceParams, body CreateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSpaceResponse, error) {
+	rsp, err := c.CreateSpace(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSpaceResponse(rsp)
+}
+
+// GetSpaceWithResponse request returning *GetSpaceResponse
+func (c *ClientWithResponses) GetSpaceWithResponse(ctx context.Context, spaceId string, params *GetSpaceParams, reqEditors ...RequestEditorFn) (*GetSpaceResponse, error) {
+	rsp, err := c.GetSpace(ctx, spaceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSpaceResponse(rsp)
+}
+
+// UpdateSpaceWithBodyWithResponse request with arbitrary body returning *UpdateSpaceResponse
+func (c *ClientWithResponses) UpdateSpaceWithBodyWithResponse(ctx context.Context, spaceId string, params *UpdateSpaceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSpaceResponse, error) {
+	rsp, err := c.UpdateSpaceWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSpaceResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSpaceWithResponse(ctx context.Context, spaceId string, params *UpdateSpaceParams, body UpdateSpaceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSpaceResponse, error) {
+	rsp, err := c.UpdateSpace(ctx, spaceId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSpaceResponse(rsp)
+}
+
 // UploadFileWithBodyWithResponse request with arbitrary body returning *UploadFileResponse
 func (c *ClientWithResponses) UploadFileWithBodyWithResponse(ctx context.Context, spaceId string, params *UploadFileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadFileResponse, error) {
 	rsp, err := c.UploadFileWithBody(ctx, spaceId, params, contentType, body, reqEditors...)
@@ -6836,6 +7437,215 @@ func ParseSearchGlobalResponse(rsp *http.Response) (*SearchGlobalResponse, error
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSpacesResponse parses an HTTP response from a ListSpacesWithResponse call
+func ParseListSpacesResponse(rsp *http.Response) (*ListSpacesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSpacesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseSpace
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSpaceResponse parses an HTTP response from a CreateSpaceWithResponse call
+func ParseCreateSpaceResponse(rsp *http.Response) (*CreateSpaceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSpaceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SpaceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSpaceResponse parses an HTTP response from a GetSpaceWithResponse call
+func ParseGetSpaceResponse(rsp *http.Response) (*GetSpaceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSpaceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SpaceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSpaceResponse parses an HTTP response from a UpdateSpaceWithResponse call
+func ParseUpdateSpaceResponse(rsp *http.Response) (*UpdateSpaceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSpaceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SpaceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ForbiddenError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFoundError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimitError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ServerError
