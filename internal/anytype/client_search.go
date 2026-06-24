@@ -18,10 +18,15 @@ type SearchOptions struct {
 // Search runs a global search across all spaces accessible to the authenticated
 // user and returns the matched objects together with pagination metadata.
 func (c *Client) Search(ctx context.Context, opts SearchOptions) (*api.PaginatedResponseObject, error) {
-	params := &api.SearchGlobalParams{
-		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	params := &api.SearchGlobalParams{AnytypeVersion: APIVersion}
+	// Only send limit/offset when set: a pointer to 0 still marshals (omitempty
+	// does not drop pointers-to-zero), which would override the server defaults
+	// and could return zero items.
+	if opts.Limit > 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset > 0 {
+		params.Offset = &opts.Offset
 	}
 
 	body := api.SearchRequest{}

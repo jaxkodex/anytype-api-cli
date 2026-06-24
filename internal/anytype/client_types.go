@@ -17,10 +17,15 @@ type ListTypesOptions struct {
 // ListTypes returns the object types defined in the given space together with
 // pagination metadata.
 func (c *Client) ListTypes(ctx context.Context, opts ListTypesOptions) (*api.PaginatedResponseType, error) {
-	params := &api.ListTypesParams{
-		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	params := &api.ListTypesParams{AnytypeVersion: APIVersion}
+	// Only send limit/offset when set: a pointer to 0 still marshals (omitempty
+	// does not drop pointers-to-zero), which would override the server defaults
+	// and could return zero items.
+	if opts.Limit > 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset > 0 {
+		params.Offset = &opts.Offset
 	}
 
 	resp, err := c.api.ListTypesWithResponse(ctx, opts.SpaceID, params)
