@@ -11,12 +11,19 @@ import (
 // NewUnauthenticatedClient builds a Client for the auth endpoints, which do not
 // require an API key. The base URL is read from EnvBaseURL, falling back to
 // DefaultBaseURL. Use this to bootstrap an API key via the challenge flow.
+//
+// Unlike NewClient it registers no Authorization request editor, so it never
+// sends an empty `Authorization: Bearer ` header that a gateway might reject.
 func NewUnauthenticatedClient() (*Client, error) {
 	baseURL := os.Getenv(EnvBaseURL)
 	if baseURL == "" {
 		baseURL = DefaultBaseURL
 	}
-	return NewClient(Config{BaseURL: baseURL})
+	c, err := api.NewClientWithResponses(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("creating API client: %w", err)
+	}
+	return &Client{api: c}, nil
 }
 
 // CreateChallenge starts an authentication challenge for the given app name.
