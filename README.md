@@ -80,14 +80,42 @@ anytype-api types get bafyre...type-id --space bafyre...
 
 # Machine-readable output
 anytype-api types list --space bafyre... --json
+
+# Create a type with convenience flags
+anytype-api types create --space bafyre... \
+  --name Task --plural Tasks --layout basic --icon ✅
+
+# Create a type from a JSON payload (file or stdin)
+cat type.json | anytype-api types create --space bafyre... --file -
+
+# Update (rename) a type — only supplied fields change
+anytype-api types update bafyre...type-id --space bafyre... --name "New name"
+
+# Delete (archive) a type, with confirmation
+anytype-api types delete bafyre...type-id --space bafyre...
+
+# Delete without prompting (for scripts)
+anytype-api types delete bafyre...type-id --space bafyre... --yes
 ```
 
-| Flag       | Short | Default | Description                          |
-| ---------- | ----- | ------- | ------------------------------------ |
-| `--space`  | `-s`  | —       | Space id to operate on (**required**) |
-| `--limit`  | `-L`  | `100`   | Maximum results to return (`list`)   |
-| `--offset` |       | `0`     | Results to skip (`list`)             |
-| `--json`   |       | `false` | Emit the raw API response as JSON    |
+| Flag       | Short | Default | Description                                             |
+| ---------- | ----- | ------- | ------------------------------------------------------- |
+| `--space`  | `-s`  | —       | Space id to operate on (**required**)                   |
+| `--limit`  | `-L`  | `100`   | Maximum results to return (`list`)                      |
+| `--offset` |       | `0`     | Results to skip (`list`)                                |
+| `--file`   | `-f`  | —       | JSON payload file, `-` for stdin (`create`, `update`)   |
+| `--name`   |       | —       | Type name (`create`, `update`)                          |
+| `--plural` |       | —       | Plural type name (`create`, `update`)                   |
+| `--key`    |       | —       | Type key in snake_case (`create`, `update`)             |
+| `--layout` |       | —       | Layout: `basic`, `note`, `profile`, `action`            |
+| `--icon`   |       | —       | Emoji icon for the type (`create`, `update`)            |
+| `--yes`    | `-y`  | `false` | Skip the confirmation prompt (`delete`)                 |
+| `--json`   |       | `false` | Emit the raw API response as JSON                       |
+
+The type definition for `create`/`update` can come from a `--file` JSON payload
+(matching the API's `CreateTypeRequest`/`UpdateTypeRequest` shape), from the
+convenience flags, or both. When combined, flags take precedence over fields in
+the payload, so a file can serve as a template you tweak per invocation.
 
 ## Project layout
 
