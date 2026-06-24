@@ -20,8 +20,15 @@ type ListSpaceObjectsOptions struct {
 func (c *Client) ListSpaceObjects(ctx context.Context, opts ListSpaceObjectsOptions) (*api.PaginatedResponseObject, error) {
 	params := &api.ListObjectsParams{
 		AnytypeVersion: APIVersion,
-		Limit:          &opts.Limit,
-		Offset:         &opts.Offset,
+	}
+	// Only send limit/offset when set: the generated params use *int with
+	// omitempty, which still marshals a pointer to 0, overriding the API's
+	// default limit and returning zero objects.
+	if opts.Limit != 0 {
+		params.Limit = &opts.Limit
+	}
+	if opts.Offset != 0 {
+		params.Offset = &opts.Offset
 	}
 
 	resp, err := c.api.ListObjectsWithResponse(ctx, opts.SpaceID, params)
