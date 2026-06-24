@@ -22,6 +22,7 @@ by default); override it with ANYTYPE_API_URL.`,
 		SilenceErrors: true,
 	}
 
+	cmd.AddCommand(newAuthCmd())
 	cmd.AddCommand(newSearchCmd())
 	cmd.AddCommand(newSpacesCmd())
 	cmd.AddCommand(newTypesCmd())

@@ -9,10 +9,12 @@ in lockstep with the published contract.
 
 ## Status
 
-Implements **spaces** management (list, get, create and update via `/v1/spaces`
-and `/v1/spaces/{space_id}`), global **search** (`POST /v1/search`), **types**
-inspection (`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`),
-**files** management (upload, download and delete via `.../files` and
+Implements **auth** (`POST /v1/auth/challenges` and `.../api_keys`): start a
+challenge and exchange the 4-digit code for an API key, **spaces** management
+(list, get, create and update via `/v1/spaces` and `/v1/spaces/{space_id}`),
+global **search** (`POST /v1/search`), **types** inspection
+(`GET /v1/spaces/{space_id}/types` and `.../types/{type_id}`), **files**
+management (upload, download and delete via `.../files` and
 `.../files/{file_id}`), **lists** (collections/sets): inspect their views and
 objects, and add/remove objects via `.../lists/{list_id}/...`, **properties**
 management (list, get, create, update and delete via `.../properties` and
