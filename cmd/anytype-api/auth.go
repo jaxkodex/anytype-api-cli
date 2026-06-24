@@ -58,18 +58,22 @@ Pass both to "auth api-key" to obtain an API key.`,
 				return err
 			}
 
+			if result.ChallengeId == nil || *result.ChallengeId == "" {
+				return fmt.Errorf("server did not return a challenge id")
+			}
+
 			if jsonOut {
 				return encodeJSON(cmd, result)
 			}
 
 			out := cmd.OutOrStdout()
 			w := tabwriter.NewWriter(out, 0, 4, 2, ' ', 0)
-			fmt.Fprintf(w, "Challenge ID:\t%s\n", orDash(deref(result.ChallengeId)))
+			fmt.Fprintf(w, "Challenge ID:\t%s\n", *result.ChallengeId)
 			if err := w.Flush(); err != nil {
 				return err
 			}
 			fmt.Fprintln(out, "\nEnter the 4-digit code shown in the Anytype app with:")
-			fmt.Fprintf(out, "  anytype-api auth api-key --challenge %s --code <code>\n", deref(result.ChallengeId))
+			fmt.Fprintf(out, "  anytype-api auth api-key --challenge %s --code <code>\n", *result.ChallengeId)
 			return nil
 		},
 	}
@@ -114,18 +118,22 @@ other commands can authenticate.`,
 				return err
 			}
 
+			if result.ApiKey == nil || *result.ApiKey == "" {
+				return fmt.Errorf("server did not return an api key")
+			}
+
 			if jsonOut {
 				return encodeJSON(cmd, result)
 			}
 
 			out := cmd.OutOrStdout()
 			w := tabwriter.NewWriter(out, 0, 4, 2, ' ', 0)
-			fmt.Fprintf(w, "API Key:\t%s\n", orDash(deref(result.ApiKey)))
+			fmt.Fprintf(w, "API Key:\t%s\n", *result.ApiKey)
 			if err := w.Flush(); err != nil {
 				return err
 			}
 			fmt.Fprintln(out, "\nExport it so other commands can use it:")
-			fmt.Fprintf(out, "  export ANYTYPE_API_KEY=%s\n", deref(result.ApiKey))
+			fmt.Fprintf(out, "  export ANYTYPE_API_KEY=%s\n", *result.ApiKey)
 			return nil
 		},
 	}
