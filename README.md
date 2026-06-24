@@ -207,6 +207,8 @@ api/
 internal/
   api/                 # Auto-generated client + models (do not edit by hand)
   anytype/             # Thin wrapper: env config, auth, request helpers
+                       #   client.go holds the shared Client; per-resource
+                       #   methods live in client_<resource>.go
 cmd/anytype-api/       # Cobra CLI commands
 ```
 
@@ -221,3 +223,18 @@ go generate ./...
 
 The generator is pinned as a Go tool dependency, so no separate install is
 needed.
+
+`internal/api/anytype.gen.go` is fully derived from the spec, so it should never
+be merged textually. `.gitattributes` marks it `merge=ours`; enable that driver
+once per clone:
+
+```sh
+git config merge.ours.driver true
+```
+
+After rebasing a feature branch, regenerate rather than resolving conflicts in
+the generated file by hand:
+
+```sh
+go generate ./...
+```
