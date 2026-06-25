@@ -104,7 +104,9 @@ func TestGetType(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, res)
 			require.NotNil(t, res.Type)
+			require.NotNil(t, res.Type.Id)
 			assert.Equal(t, "ty1", *res.Type.Id)
+			require.NotNil(t, res.Type.Name)
 			assert.Equal(t, "Task", *res.Type.Name)
 		})
 	}
@@ -136,11 +138,11 @@ func TestCreateType(t *testing.T) {
 	}
 
 	body := api.CreateTypeRequest{
-		Name:            "Task",
-		PluralName:      "Tasks",
-		TypeLayoutKind:  api.TypeLayoutBasic,
-		Key:             ptr("task"),
-		Icon:            emojiIcon(t, "✅"),
+		Name:           "Task",
+		PluralName:     "Tasks",
+		TypeLayoutKind: api.TypeLayoutBasic,
+		Key:            ptr("task"),
+		Icon:           emojiIcon(t, "✅"),
 	}
 
 	for _, tc := range tests {

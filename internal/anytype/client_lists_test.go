@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	viewsOKBody = `{"data":[{"id":"view1","name":"All","layout":"list"}],"pagination":{"total":1,"offset":0,"limit":100,"has_more":false}}`
+	viewsOKBody   = `{"data":[{"id":"view1","name":"All","layout":"list"}],"pagination":{"total":1,"offset":0,"limit":100,"has_more":false}}`
 	objectsOKBody = `{"data":[{"id":"obj1","name":"Task","space_id":"sp1","icon":null,"type":null}],"pagination":{"total":1,"offset":0,"limit":100,"has_more":false}}`
 )
 
